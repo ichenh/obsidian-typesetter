@@ -1,0 +1,152 @@
+.publishing-typography-widget {
+  white-space: pre;
+}
+
+.publishing-typography-settings-intro {
+  color: var(--text-muted);
+  margin-block: 0 1.5rem;
+  max-width: 48rem;
+}
+
+.publishing-typography-rendered {
+  display: none;
+}
+
+.publishing-typography-token.is-reading-enabled > .publishing-typography-source {
+  display: none;
+}
+
+.publishing-typography-token.is-reading-enabled > .publishing-typography-rendered {
+  display: inline;
+}
+
+@media print {
+  .publishing-typography-token > .publishing-typography-source {
+    display: inline;
+  }
+
+  .publishing-typography-token > .publishing-typography-rendered {
+    display: none;
+  }
+
+  .publishing-typography-token.is-pdf-enabled > .publishing-typography-source {
+    display: none;
+  }
+
+  .publishing-typography-token.is-pdf-enabled > .publishing-typography-rendered {
+    display: inline;
+  }
+}
+
+.publishing-typography-widget[data-typography-rule$="-arrow"],
+.publishing-typography-token[data-typography-rule$="-arrow"]
+  > .publishing-typography-rendered {
+  /* Keep short and long Unicode arrows on one mathematical axis. */
+  font-family:
+    "STIX Two Math",
+    "Cambria Math",
+    "Noto Sans Math",
+    "Segoe UI Symbol",
+    "Apple Symbols",
+    sans-serif;
+}
+
+.publishing-typography-widget[data-typography-rule="em-dash"],
+.publishing-typography-widget[data-typography-rule="en-dash"],
+.publishing-typography-token[data-typography-rule="em-dash"] > .publishing-typography-rendered,
+.publishing-typography-token[data-typography-rule="en-dash"] > .publishing-typography-rendered {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "clig" 0, "calt" 0;
+  letter-spacing: normal;
+}
+
+:is(
+  .publishing-typography-widget,
+  .publishing-typography-glyph,
+  .publishing-typography-rendered
+):lang(zh) {
+  font-family: var(--typesetter-cjk-punctuation-font-zh, serif);
+}
+
+:is(
+  .publishing-typography-widget,
+  .publishing-typography-glyph,
+  .publishing-typography-rendered
+):is(:lang(zh-Hans), :lang(zh-CN)) {
+  font-family: var(
+    --typesetter-cjk-punctuation-font-zh-cn,
+    "Source Han Serif SC",
+    "Noto Serif CJK SC",
+    "Songti SC",
+    SimSun,
+    serif
+  );
+}
+
+:is(
+  .publishing-typography-widget,
+  .publishing-typography-glyph,
+  .publishing-typography-rendered
+):is(:lang(zh-Hant), :lang(zh-TW)) {
+  font-family: var(
+    --typesetter-cjk-punctuation-font-zh-tw,
+    "Source Han Serif TC",
+    "Noto Serif CJK TC",
+    "Songti TC",
+    PMingLiU,
+    serif
+  );
+}
+
+:is(
+  .publishing-typography-widget,
+  .publishing-typography-glyph,
+  .publishing-typography-rendered
+):is(:lang(zh-HK), :lang(zh-MO)) {
+  font-family: var(
+    --typesetter-cjk-punctuation-font-zh-hk,
+    "Source Han Serif HC",
+    "Noto Serif CJK HK",
+    "MingLiU_HKSCS",
+    "Songti TC",
+    serif
+  );
+}
+
+:is(
+  .publishing-typography-widget,
+  .publishing-typography-glyph,
+  .publishing-typography-rendered
+):lang(ja) {
+  font-family: var(
+    --typesetter-cjk-punctuation-font-ja,
+    "Source Han Serif",
+    "Noto Serif CJK JP",
+    "Yu Mincho",
+    "Hiragino Mincho ProN",
+    serif
+  );
+}
+
+:is(
+  .publishing-typography-widget,
+  .publishing-typography-glyph,
+  .publishing-typography-rendered
+):lang(ko) {
+  font-family: var(
+    --typesetter-cjk-punctuation-font-ko,
+    "Source Han Serif K",
+    "Noto Serif CJK KR",
+    Batang,
+    "AppleMyungjo",
+    serif
+  );
+}
+
+:is(
+  .publishing-typography-widget,
+  .publishing-typography-glyph,
+  .publishing-typography-rendered
+):is(:lang(zh), :lang(ja), :lang(ko)) {
+  font-feature-settings: "locl" 1;
+}

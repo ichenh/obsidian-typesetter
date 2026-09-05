@@ -1,0 +1,10 @@
+{
+  "id": "obsidian-publishing-typography",
+  "name": "Typesetter",
+  "version": "0.1.0",
+  "minAppVersion": "1.7.2",
+  "description": "Non-destructive publication-quality typography for Live Preview, Reading View, source mode, and PDF output.",
+  "author": "CHEN Hua",
+  "authorUrl": "https://github.com/ichenh",
+  "isDesktopOnly": false
+}

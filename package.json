@@ -1,0 +1,44 @@
+{
+  "name": "obsidian-publishing-typography",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Non-destructive publication-quality typography for Live Preview, Reading View, source mode, and PDF output.",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ichenh/obsidian-typesetter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ichenh/obsidian-typesetter/issues"
+  },
+  "homepage": "https://github.com/ichenh/obsidian-typesetter#readme",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "tsc --noEmit && node esbuild.config.mjs production",
+    "lint": "eslint . --max-warnings=0",
+    "test": "vitest run",
+    "check:release": "node scripts/check-release.cjs",
+    "check": "npm run lint && npm run build && npm test && npm run check:release"
+  },
+  "author": "CHEN Hua",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24.0.0 <25"
+  },
+  "devDependencies": {
+    "@codemirror/language": "^6.10.2",
+    "@codemirror/state": "6.5.0",
+    "@codemirror/view": "6.38.6",
+    "@eslint/js": "^9.39.4",
+    "@types/node": "^20.11.0",
+    "esbuild": "^0.28.1",
+    "eslint": "^9.39.4",
+    "eslint-plugin-obsidianmd": "^0.4.0",
+    "globals": "^17.6.0",
+    "jiti": "^2.6.1",
+    "obsidian": "^1.13.0",
+    "typescript": "^5.4.0",
+    "typescript-eslint": "^8.59.1",
+    "vitest": "^4.1.9"
+  }
+}

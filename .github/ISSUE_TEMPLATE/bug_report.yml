@@ -1,0 +1,59 @@
+name: Bug report
+description: Report a reproducible Typesetter problem
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for helping make typography rendering safer.
+  - type: input
+    id: version
+    attributes:
+      label: Typesetter version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: obsidian
+    attributes:
+      label: Obsidian version and platform
+      placeholder: Obsidian 1.x, Windows/macOS/Linux/iOS/Android
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Rendering surface
+      options:
+        - Source Mode
+        - Live Preview
+        - Reading View
+        - Native PDF export
+        - Multiple surfaces
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal source and reproduction steps
+      description: Remove private information. Include the literal Markdown and the rendered result.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: settings
+    attributes:
+      label: Relevant settings and other plugins
+      description: State which rule switches are enabled and whether the issue persists with other plugins disabled.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Source safety
+      options:
+        - label: I confirmed whether the underlying Markdown source changed.
+          required: true
