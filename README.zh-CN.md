@@ -12,7 +12,7 @@
   <a href="https://github.com/ichenh/obsidian-typesetter/actions/workflows/release.yml"><img alt="发布" src="https://github.com/ichenh/obsidian-typesetter/actions/workflows/release.yml/badge.svg"></a>
 </p>
 
-当前版本：v0.1.1
+当前版本：v0.1.2
 
 需要 Obsidian **1.7.2 或更高版本**。
 

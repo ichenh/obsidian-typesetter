@@ -2,6 +2,14 @@
 
 All notable changes to Typesetter are documented in this file.
 
+## [Unreleased]
+
+## [0.1.2] - 2026-09-05
+
+### Fixed
+
+- Replaced the ES2022-only `Array.prototype.at` call in Live Preview decoration range merging with ES2020-compatible typed indexing, eliminating unsafe-value diagnostics in Obsidian's review environment.
+
 ## [0.1.1] - 2026-09-05
 
 ### Changed

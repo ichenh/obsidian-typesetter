@@ -1,4 +1,4 @@
-import type { SelectionRange } from "@codemirror/state";
+import type { Range, SelectionRange } from "@codemirror/state";
 import {
   Decoration,
   type DecorationSet,
@@ -26,7 +26,7 @@ function expandedVisibleRanges(view: EditorView): Array<{ from: number; to: numb
   for (const visible of view.visibleRanges) {
     const from = view.state.doc.lineAt(visible.from).from;
     const to = view.state.doc.lineAt(visible.to).to;
-    const previous = ranges.at(-1);
+    const previous = ranges[ranges.length - 1];
     if (previous && from <= previous.to) {
       previous.to = Math.max(previous.to, to);
     } else {
@@ -41,7 +41,7 @@ export function buildTypographyDecorations(
   engine: TypographyEngine,
   settings: Readonly<TypesetterSettings>,
 ): DecorationSet {
-  const decorations = [];
+  const decorations: Array<Range<Decoration>> = [];
   for (const range of expandedVisibleRanges(view)) {
     const text = view.state.doc.sliceString(range.from, range.to);
     for (const replacement of engine.findReplacements(text, { settings })) {
@@ -56,7 +56,7 @@ export function buildTypographyDecorations(
         if (replacement.language) attributes.lang = replacement.language;
         decorations.push(
           Decoration.mark({
-          class: "typesetter-glyph",
+            class: "typesetter-glyph",
             attributes,
           }).range(from, to),
         );
