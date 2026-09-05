@@ -6,11 +6,11 @@ import {
   type SettingDefinitionItem,
 } from "obsidian";
 import { t, type TranslationKey } from "./l10n/locale";
-import type PublishingTypographyPlugin from "./main";
+import type TypesetterPlugin from "./main";
 import { DEFAULT_SETTINGS } from "./settings";
 import type {
   BooleanSettingKey,
-  PublishingTypographySettings,
+  TypesetterSettings,
 } from "./types";
 
 interface ToggleSpec {
@@ -139,8 +139,8 @@ const SETTING_SECTIONS: readonly SettingSection[] = [
 function isBooleanSettingKey(key: string): key is BooleanSettingKey {
   return (
     key !== "schemaVersion" &&
-    key in DEFAULT_SETTINGS &&
-    typeof DEFAULT_SETTINGS[key as keyof PublishingTypographySettings] ===
+      key in DEFAULT_SETTINGS &&
+      typeof DEFAULT_SETTINGS[key as keyof TypesetterSettings] ===
       "boolean"
   );
 }
@@ -156,8 +156,8 @@ function toDefinition(
   };
 }
 
-export class PublishingTypographySettingTab extends PluginSettingTab {
-  constructor(app: App, private readonly plugin: PublishingTypographyPlugin) {
+export class TypesetterSettingTab extends PluginSettingTab {
+  constructor(app: App, private readonly plugin: TypesetterPlugin) {
     super(app, plugin);
   }
 
@@ -168,10 +168,10 @@ export class PublishingTypographySettingTab extends PluginSettingTab {
         desc: t("settingsSubtitle"),
         searchable: false,
         render: (setting) => {
-          this.containerEl.addClass("publishing-typography-settings");
+          this.containerEl.addClass("typesetter-settings");
           setting.settingEl.empty();
           setting.settingEl.createEl("p", {
-            cls: "publishing-typography-settings-intro",
+            cls: "typesetter-settings-intro",
             text: t("settingsIntro"),
           });
         },
@@ -195,9 +195,9 @@ export class PublishingTypographySettingTab extends PluginSettingTab {
 
   display(): void {
     this.containerEl.empty();
-    this.containerEl.addClass("publishing-typography-settings");
+    this.containerEl.addClass("typesetter-settings");
     this.containerEl.createEl("p", {
-      cls: "publishing-typography-settings-intro",
+      cls: "typesetter-settings-intro",
       text: t("settingsIntro"),
     });
     for (const section of SETTING_SECTIONS) {

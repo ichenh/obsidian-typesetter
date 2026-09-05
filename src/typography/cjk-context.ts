@@ -1,6 +1,6 @@
 import type {
   CjkTypographySystem,
-  PublishingTypographySettings,
+  TypesetterSettings,
 } from "../types";
 
 const HIRAGANA_OR_KATAKANA_RE = /[\p{Script=Hiragana}\p{Script=Katakana}]/u;
@@ -77,7 +77,7 @@ export function resolveCjkSystem(
 
 export function isCjkSystemEnabled(
   system: CjkTypographySystem,
-  settings: Readonly<PublishingTypographySettings>,
+  settings: Readonly<TypesetterSettings>,
 ): boolean {
   if (system === "ja") return settings.japanesePunctuation;
   if (system === "ko") return settings.koreanPunctuation;
@@ -91,7 +91,7 @@ export function isCjkSystemEnabled(
 
 export function languageForCjkSystem(
   system: CjkTypographySystem,
-  settings: Readonly<PublishingTypographySettings>,
+  settings: Readonly<TypesetterSettings>,
 ): CjkTypographySystem {
   if (system !== "zh") return system;
   if (

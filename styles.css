@@ -1,46 +1,45 @@
-.publishing-typography-widget {
+.typesetter-widget {
   white-space: pre;
 }
 
-.publishing-typography-settings-intro {
+.typesetter-settings-intro {
   color: var(--text-muted);
   margin-block: 0 1.5rem;
   max-width: 48rem;
 }
 
-.publishing-typography-rendered {
+.typesetter-rendered {
   display: none;
 }
 
-.publishing-typography-token.is-reading-enabled > .publishing-typography-source {
+.typesetter-token.is-reading-enabled > .typesetter-source {
   display: none;
 }
 
-.publishing-typography-token.is-reading-enabled > .publishing-typography-rendered {
+.typesetter-token.is-reading-enabled > .typesetter-rendered {
   display: inline;
 }
 
 @media print {
-  .publishing-typography-token > .publishing-typography-source {
+  .typesetter-token > .typesetter-source {
     display: inline;
   }
 
-  .publishing-typography-token > .publishing-typography-rendered {
+  .typesetter-token > .typesetter-rendered {
     display: none;
   }
 
-  .publishing-typography-token.is-pdf-enabled > .publishing-typography-source {
+  .typesetter-token.is-pdf-enabled > .typesetter-source {
     display: none;
   }
 
-  .publishing-typography-token.is-pdf-enabled > .publishing-typography-rendered {
+  .typesetter-token.is-pdf-enabled > .typesetter-rendered {
     display: inline;
   }
 }
 
-.publishing-typography-widget[data-typography-rule$="-arrow"],
-.publishing-typography-token[data-typography-rule$="-arrow"]
-  > .publishing-typography-rendered {
+.typesetter-widget[data-typography-rule$="-arrow"],
+.typesetter-token[data-typography-rule$="-arrow"] > .typesetter-rendered {
   /* Keep short and long Unicode arrows on one mathematical axis. */
   font-family:
     "STIX Two Math",
@@ -51,27 +50,23 @@
     sans-serif;
 }
 
-.publishing-typography-widget[data-typography-rule="em-dash"],
-.publishing-typography-widget[data-typography-rule="en-dash"],
-.publishing-typography-token[data-typography-rule="em-dash"] > .publishing-typography-rendered,
-.publishing-typography-token[data-typography-rule="en-dash"] > .publishing-typography-rendered {
+.typesetter-widget[data-typography-rule="em-dash"],
+.typesetter-widget[data-typography-rule="en-dash"],
+.typesetter-token[data-typography-rule="em-dash"] > .typesetter-rendered,
+.typesetter-token[data-typography-rule="en-dash"] > .typesetter-rendered {
   font-variant-ligatures: none;
   font-feature-settings: "liga" 0, "clig" 0, "calt" 0;
   letter-spacing: normal;
 }
 
-:is(
-  .publishing-typography-widget,
-  .publishing-typography-glyph,
-  .publishing-typography-rendered
-):lang(zh) {
+:is(.typesetter-widget, .typesetter-glyph, .typesetter-rendered):lang(zh) {
   font-family: var(--typesetter-cjk-punctuation-font-zh, serif);
 }
 
 :is(
-  .publishing-typography-widget,
-  .publishing-typography-glyph,
-  .publishing-typography-rendered
+  .typesetter-widget,
+  .typesetter-glyph,
+  .typesetter-rendered
 ):is(:lang(zh-Hans), :lang(zh-CN)) {
   font-family: var(
     --typesetter-cjk-punctuation-font-zh-cn,
@@ -84,9 +79,9 @@
 }
 
 :is(
-  .publishing-typography-widget,
-  .publishing-typography-glyph,
-  .publishing-typography-rendered
+  .typesetter-widget,
+  .typesetter-glyph,
+  .typesetter-rendered
 ):is(:lang(zh-Hant), :lang(zh-TW)) {
   font-family: var(
     --typesetter-cjk-punctuation-font-zh-tw,
@@ -99,9 +94,9 @@
 }
 
 :is(
-  .publishing-typography-widget,
-  .publishing-typography-glyph,
-  .publishing-typography-rendered
+  .typesetter-widget,
+  .typesetter-glyph,
+  .typesetter-rendered
 ):is(:lang(zh-HK), :lang(zh-MO)) {
   font-family: var(
     --typesetter-cjk-punctuation-font-zh-hk,
@@ -113,11 +108,7 @@
   );
 }
 
-:is(
-  .publishing-typography-widget,
-  .publishing-typography-glyph,
-  .publishing-typography-rendered
-):lang(ja) {
+:is(.typesetter-widget, .typesetter-glyph, .typesetter-rendered):lang(ja) {
   font-family: var(
     --typesetter-cjk-punctuation-font-ja,
     "Source Han Serif",
@@ -128,11 +119,7 @@
   );
 }
 
-:is(
-  .publishing-typography-widget,
-  .publishing-typography-glyph,
-  .publishing-typography-rendered
-):lang(ko) {
+:is(.typesetter-widget, .typesetter-glyph, .typesetter-rendered):lang(ko) {
   font-family: var(
     --typesetter-cjk-punctuation-font-ko,
     "Source Han Serif K",
@@ -144,9 +131,9 @@
 }
 
 :is(
-  .publishing-typography-widget,
-  .publishing-typography-glyph,
-  .publishing-typography-rendered
+  .typesetter-widget,
+  .typesetter-glyph,
+  .typesetter-rendered
 ):is(:lang(zh), :lang(ja), :lang(ko)) {
   font-feature-settings: "locl" 1;
 }

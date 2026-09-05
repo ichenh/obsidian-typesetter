@@ -5,7 +5,7 @@ import {
   EditorView,
 } from "@codemirror/view";
 import type { TypographyEngine } from "../typography/engine";
-import type { PublishingTypographySettings } from "../types";
+import type { TypesetterSettings } from "../types";
 import { isSafePlainTextRange } from "./safe-range";
 import { TypographyWidget } from "./widget";
 
@@ -39,7 +39,7 @@ function expandedVisibleRanges(view: EditorView): Array<{ from: number; to: numb
 export function buildTypographyDecorations(
   view: EditorView,
   engine: TypographyEngine,
-  settings: Readonly<PublishingTypographySettings>,
+  settings: Readonly<TypesetterSettings>,
 ): DecorationSet {
   const decorations = [];
   for (const range of expandedVisibleRanges(view)) {
@@ -56,7 +56,7 @@ export function buildTypographyDecorations(
         if (replacement.language) attributes.lang = replacement.language;
         decorations.push(
           Decoration.mark({
-            class: "publishing-typography-glyph",
+          class: "typesetter-glyph",
             attributes,
           }).range(from, to),
         );

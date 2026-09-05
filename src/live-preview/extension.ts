@@ -8,14 +8,14 @@ import {
 import { editorLivePreviewField } from "obsidian";
 import { shouldRenderEditorMode } from "../rendering-modes";
 import { TypographyEngine } from "../typography/engine";
-import type { PublishingTypographySettings } from "../types";
+import type { TypesetterSettings } from "../types";
 import { buildTypographyDecorations } from "./decorations";
 
 export interface TypographyExtensionOptions {
-  getSettings(): Readonly<PublishingTypographySettings>;
+  getSettings(): Readonly<TypesetterSettings>;
 }
 
-function settingsKey(settings: Readonly<PublishingTypographySettings>): string {
+function settingsKey(settings: Readonly<TypesetterSettings>): string {
   return [
     settings.enabled,
     settings.sourceMode,

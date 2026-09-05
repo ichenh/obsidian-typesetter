@@ -17,9 +17,9 @@ export const en = {
   livePreviewDesc: "Visually typesets prose while editing.",
   readingViewName: "Enable in Reading View",
   readingViewDesc: "Typesets safe rendered text nodes.",
-  pdfExportName: "Enable in PDF export",
+  pdfExportName: "Enable for print and PDF output",
   pdfExportDesc:
-    "Uses typeset tokens for Obsidian's native print and PDF rendering.",
+    "Uses typeset tokens when the host or exporter prints Obsidian's rendered view.",
   revealAtCursorName: "Reveal source token at cursor",
   revealAtCursorDesc:
     "Shows the literal Markdown token when a cursor or selection touches it.",
@@ -74,12 +74,12 @@ export const en = {
   cmdToggleSourceMode: "Toggle source mode rendering",
   cmdToggleLivePreview: "Toggle Live Preview rendering",
   cmdToggleReadingView: "Toggle Reading View rendering",
-  cmdTogglePdfExport: "Toggle PDF export rendering",
+  cmdTogglePdfExport: "Toggle print and PDF rendering",
   labelRendering: "Typography rendering",
   labelSourceMode: "Source mode typography",
   labelLivePreview: "Live Preview typography",
   labelReadingView: "Reading View typography",
-  labelPdfExport: "PDF export typography",
+  labelPdfExport: "Print and PDF typography",
   noticeEnabled: "%1 enabled.",
   noticeDisabled: "%1 disabled.",
 } as const;

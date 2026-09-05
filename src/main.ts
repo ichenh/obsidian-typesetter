@@ -7,15 +7,15 @@ import {
   normalizeSettings,
   SETTINGS_SCHEMA_VERSION,
 } from "./settings";
-import { PublishingTypographySettingTab } from "./settings-tab";
+import { TypesetterSettingTab } from "./settings-tab";
 import { TypographyEngine } from "./typography/engine";
 import type {
   BooleanSettingKey,
-  PublishingTypographySettings,
+  TypesetterSettings,
 } from "./types";
 
-export default class PublishingTypographyPlugin extends Plugin {
-  settings: PublishingTypographySettings = { ...DEFAULT_SETTINGS };
+export default class TypesetterPlugin extends Plugin {
+  settings: TypesetterSettings = { ...DEFAULT_SETTINGS };
   private readonly engine = new TypographyEngine();
   private readonly readingRenderer = new ReadingViewRenderer({
     engine: this.engine,
@@ -39,7 +39,7 @@ export default class PublishingTypographyPlugin extends Plugin {
     this.registerMarkdownPostProcessor((element) => {
       this.readingRenderer.process(element);
     });
-    this.addSettingTab(new PublishingTypographySettingTab(this.app, this));
+    this.addSettingTab(new TypesetterSettingTab(this.app, this));
 
     this.addCommand({
       id: "toggle-rendering",

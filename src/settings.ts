@@ -1,8 +1,8 @@
-import type { PublishingTypographySettings } from "./types";
+import type { TypesetterSettings } from "./types";
 
 export const SETTINGS_SCHEMA_VERSION = 8;
 
-export const DEFAULT_SETTINGS: PublishingTypographySettings = {
+export const DEFAULT_SETTINGS: TypesetterSettings = {
   schemaVersion: SETTINGS_SCHEMA_VERSION,
   enabled: true,
   sourceMode: false,
@@ -43,12 +43,12 @@ export const DEFAULT_SETTINGS: PublishingTypographySettings = {
 
 export function normalizeSettings(
   input: unknown,
-): PublishingTypographySettings {
+): TypesetterSettings {
   if (!input || typeof input !== "object") return { ...DEFAULT_SETTINGS };
   const source = input as Record<string, unknown>;
   const normalized = { ...DEFAULT_SETTINGS };
   for (const key of Object.keys(DEFAULT_SETTINGS) as Array<
-    keyof PublishingTypographySettings
+    keyof TypesetterSettings
   >) {
     if (key === "schemaVersion") continue;
     if (typeof source[key] === "boolean") normalized[key] = source[key];

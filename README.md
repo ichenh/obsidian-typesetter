@@ -1,84 +1,283 @@
-# Typesetter
+<h1 align="center">Typesetter for Obsidian</h1>
 
-[![CI](https://github.com/ichenh/obsidian-typesetter/actions/workflows/ci.yml/badge.svg)](https://github.com/ichenh/obsidian-typesetter/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/ichenh/obsidian-typesetter?display_name=tag&sort=semver)](https://github.com/ichenh/obsidian-typesetter/releases)
-[![License](https://img.shields.io/github/license/ichenh/obsidian-typesetter)](LICENSE)
+<p align="center"><strong>Publication-quality typography for Markdown, without changing the source.</strong></p>
+<p align="center"><a href="README.zh-CN.md">简体中文</a></p>
 
-Current release: v0.1.0
+<p align="center">
+  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/ichenh/obsidian-typesetter"></a>
+  <img alt="Obsidian 1.7.2 or later" src="https://img.shields.io/badge/Obsidian-1.7.2%2B-7c3aed?logo=obsidian">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript">
+  <a href="https://github.com/ichenh/obsidian-typesetter/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/ichenh/obsidian-typesetter?display_name=tag&sort=semver"></a>
+  <a href="https://github.com/ichenh/obsidian-typesetter/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/ichenh/obsidian-typesetter/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/ichenh/obsidian-typesetter/actions/workflows/release.yml"><img alt="Release" src="https://github.com/ichenh/obsidian-typesetter/actions/workflows/release.yml/badge.svg"></a>
+</p>
 
-Typesetter is a non-destructive publishing typography layer that gives ordinary Markdown prose publication-quality punctuation in Source Mode, Live Preview, Reading View, and Obsidian's native PDF output. Every rendering surface is independently configurable.
+Current release: v0.1.1
 
-> The plugin does not modify the underlying Markdown source.
+Requires Obsidian **1.7.2 or later**.
 
-## How it works
+Typesetter is a free, open-source, local-first Obsidian plugin for academic writing,
+scientific notes, and multilingual prose. It adds a non-destructive typesetting layer
+to Source Mode, Live Preview, Reading View, and print/PDF rendering. Every surface and
+typography rule is independently configurable.
 
-Obsidian parses Markdown first. The plugin then identifies safe visible prose and applies typography only to editor decorations or dual source/rendered DOM tokens. Source Mode stays literal by default but can opt into the same non-destructive decorations. Editor copy operations keep the source tokens, and disabling the plugin restores literal rendering.
+> **The plugin does not modify the underlying Markdown source.**
 
-```text
+~~~text
 Source:
 The result----although unexpected----was obtained in 2025-2026.
 
 Rendered:
 The result—although unexpected—was obtained in 2025–2026.
-```
+~~~
 
-## Rules
+## Contents
 
-- `--` renders as an en dash (`–`).
-- `----` renders as an em dash (`—`) with longest-match precedence; `---` is deliberately not a shorthand because it is Markdown structure.
-- Conservative numerical ranges such as `2025-2027` and `pp. 15-23` use an en dash.
-- Every ASCII arrow token has its own option. The conservative defaults enable `->` → `→`, `<-` → `←`, `<->` → `↔`, `-->` → `⟶`, `<--` → `⟵`, and `<-->` → `⟷`.
-- Potential programming or comparison operators are supported but disabled by default: `=>` → `⇒`, `<=` → `⇐`, `<=>` → `⇔`, `==>` → `⟹`, `<==` → `⟸`, and `<==>` → `⟺`. Users decide which mappings are appropriate for their prose.
-- Explicit ellipsis shorthands are deterministic: `...` renders as `…`, while `......` renders as the centered Chinese ellipsis `……`. The engine does not choose an ellipsis convention from surrounding prose.
-- CJK quotation marks and punctuation preserve the Unicode characters supplied by the input method. Regional punctuation and shared curly-quote glyph shaping have separate opt-in switches. Curly quote characters are styled independently of the text inside them, while straight ASCII quotes remain literal.
-- Common Simplified Chinese, Traditional Chinese, Japanese, and Korean input characters are preserved, including fullwidth and halfwidth punctuation such as `．`, `｡`, `､`, `｢｣`, `＂`, and `＇`.
-- Japanese kana and Korean Hangul can safely identify their writing systems locally. Unified Han text cannot reliably identify mainland China, Taiwan, Hong Kong, Macau, or Japanese usage; explicit inherited BCP 47 `lang` metadata takes precedence in rendered HTML.
-- Visual full-stop, comma, colon, semicolon, question-mark, and exclamation-mark correction remains available as independently configurable advanced behavior, but is disabled by default. Input-method punctuation is authoritative by default.
+- [Features](#features)
+- [Platform support](#platform-support)
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [Typography rules](#typography-rules)
+- [Protected contexts](#protected-contexts)
+- [Settings](#settings)
+- [How it works](#how-it-works)
+- [Development](#development)
+- [Release process](#release-process)
+- [Known limitations](#known-limitations)
+- [Project policies](#project-policies)
 
-Every rule can be disabled independently. Source Mode, Live Preview, Reading View, and native PDF rendering have separate switches, and source tokens are revealed at the cursor by default.
+## Features
 
-The plugin interface follows Obsidian's application language. Complete built-in UI translations are provided for English, Simplified Chinese, Traditional Chinese, Japanese, and Korean; Hong Kong and Macau locale codes use the Traditional Chinese interface, and other languages fall back safely to English.
+| Area | Behavior |
+| --- | --- |
+| Non-destructive rendering | Displays typeset characters while preserving the Markdown file, editor document, frontmatter, and clipboard text. |
+| Four rendering controls | Source Mode, Live Preview, Reading View, and print/PDF output can be enabled separately. |
+| Syntax-aware safety | CodeMirror 6 syntax information protects code, math, links, metadata, and Markdown structure. |
+| Safe rendered DOM | Reading View processes visible prose text nodes without changing attributes or link targets. |
+| Deterministic engine | Independent rules return ranges; conflicts use fixed priority and longest-match resolution. |
+| Multilingual punctuation | Preserves input-method Unicode by default, with opt-in CJK shaping and script-aware corrections. |
+| Editing-friendly display | Original tokens appear at the cursor by default; editor copy keeps source tokens. |
+| Offline and local-first | No account, telemetry, advertising, remote service, or runtime download. |
 
-## Rendering modes
+## Platform support
 
-- **Source Mode** uses CodeMirror decorations and is off by default. Enabling it never changes the editor document.
-- **Live Preview** uses syntax-aware CodeMirror decorations and is on by default.
-- **Reading View** selects rendered typography from DOM tokens while retaining the literal source token in the DOM.
-- **PDF export** independently selects rendered typography under print media. This supports Obsidian's native print/PDF path even when Reading View typography is disabled on screen.
+Typesetter declares `isDesktopOnly: false` and uses Obsidian and CodeMirror web APIs,
+not Node.js, Electron, or direct file-system APIs. Source Mode, Live Preview, Reading
+View, settings, and commands are designed for desktop and mobile Obsidian.
+
+Print/PDF rendering is a compatibility surface, not a PDF generator. It works when
+Obsidian or an export plugin captures the post-processed Reading View DOM and honors
+print CSS. Desktop Obsidian's native print/PDF path follows this model. A mobile or
+third-party exporter can also work, but an exporter that reparses Markdown, skips
+Obsidian post processors, or discards print CSS needs a dedicated adapter.
+
+| Platform or workflow | Status |
+| --- | --- |
+| Windows, macOS, Linux | Supported architecture; verify each relevant Obsidian release. |
+| Android, iOS, iPadOS | Mobile-compatible architecture for editor and Reading View rendering. |
+| Obsidian native print/PDF | Supported through the independent print/PDF setting. |
+| Third-party export plugins | Compatible when they use Obsidian's rendered DOM and print styles; verify per exporter. |
+
+## Installation
+
+### Community plugins
+
+Typesetter is not yet listed in Obsidian's Community plugins directory. After it is
+accepted, installation will be available from **Settings → Community plugins**.
+
+### Install a release manually
+
+1. Download `main.js`, `manifest.json`, and `styles.css` from the matching
+   [GitHub release](https://github.com/ichenh/obsidian-typesetter/releases).
+2. Create `<vault>/.obsidian/plugins/typesetter/`.
+3. Place all three files in that directory.
+4. Reload Obsidian.
+5. Open **Settings → Community plugins** and enable **Typesetter**.
+
+The folder name must match the manifest ID: `typesetter`.
+
+### Build from source
+
+~~~bash
+git clone https://github.com/ichenh/obsidian-typesetter.git
+cd obsidian-typesetter
+npm ci
+npm run build
+~~~
+
+Copy `main.js`, `manifest.json`, and `styles.css` to
+`<vault>/.obsidian/plugins/typesetter/`, then reload Obsidian.
+
+## Quick start
+
+1. Enable Typesetter.
+2. Leave **Live Preview**, **Reading View**, and **Print and PDF output** enabled.
+3. Keep **Source Mode** disabled for literal Markdown while editing.
+4. Type a shorthand such as `--`, `----`, or `...` in ordinary prose.
+5. Move the cursor into a transformed token to reveal its source.
+6. Disable any rule that conflicts with a vault's notation or house style.
+
+Commands can toggle all rendering, Live Preview, or Reading View without changing note
+content.
+
+## Typography rules
+
+### Dashes and ranges
+
+| Source token or context | Display | Default | Notes |
+| --- | --- | --- | --- |
+| `--` | en dash `–` | On | Ordinary prose only. |
+| `----` | em dash `—` | On | Evaluated before `--`; `---` is not a shorthand. |
+| `2025-2027`, `pp. 15-23` | range with `–` | On | Conservative detection; subtraction and scientific notation stay literal. |
+
+Markdown thematic breaks and frontmatter delimiters are structural syntax and are
+never treated as dash shorthands.
+
+### Arrows
+
+Every mapping has its own switch. Single-line arrows are enabled by default.
+Operator-like double arrows are disabled because `<=` and `=>` are common in code.
+
+| Source token | Display character | Default |
+| --- | --- | --- |
+| `->`, `<-`, `<->` | `→`, `←`, `↔` | On |
+| `-->`, `<--`, `<-->` | `⟶`, `⟵`, `⟷` | On |
+| `=>`, `<=`, `<=>` | `⇒`, `⇐`, `⇔` | Off |
+| `==>`, `<==`, `<==>` | `⟹`, `⟸`, `⟺` | Off |
+
+These are prose display rules, never source replacements. Code and formulas stay
+protected even when a corresponding option is enabled.
+
+### Ellipses
+
+| Source token | Display character | Default |
+| --- | --- | --- |
+| `...` | `…` | On |
+| `......` | centered Chinese ellipsis `……` | On |
+
+The engine uses explicit tokens and does not guess an ellipsis convention from the
+document's dominant language.
+
+### CJK and Latin punctuation
+
+Input-method Unicode is authoritative by default. Typesetter preserves Simplified
+Chinese, Traditional Chinese, Japanese, and Korean punctuation, including fullwidth
+and halfwidth forms such as `．`, `｡`, `､`, `｢｣`, `＂`, and `＇`.
+
+Regional punctuation shaping and shared curly-quote shaping are separate opt-in
+features. Full stop, comma, colon, semicolon, question mark, and exclamation mark
+corrections are independent advanced rules and default to off. This avoids overriding
+the author's input method or editorial house style.
+
+Explicit inherited BCP 47 language metadata takes precedence in rendered HTML.
+Japanese kana and Korean Hangul can identify local script, but Han characters alone
+cannot distinguish mainland Chinese, Taiwan, Hong Kong, Macau, or Japanese conventions.
 
 ## Protected contexts
 
-Frontmatter and Properties, inline and fenced code, indented code, math and MathJax, TikZ, HTML source, SVG, scripts and styles, URLs, link destinations, wikilink targets, embeds, tags, block IDs, and Markdown structural syntax are excluded. Visible prose in headings, lists, blockquotes, tables, callouts, footnotes, and link labels can still be typeset when Obsidian exposes it as safe text.
+Typesetter always excludes:
 
-Safety is conservative: a missed conversion is preferred to modifying technical rendering. The plugin never writes note files, editor transactions, frontmatter, or clipboard content.
+- YAML frontmatter and Properties;
+- inline, fenced, and indented code, including TikZ;
+- inline and display LaTeX, MathJax output, and technical math containers;
+- HTML source, SVG, `script`, and `style`;
+- URLs, Markdown link destinations, wikilink targets, and embed targets;
+- tags, block IDs, and Markdown structural syntax; and
+- plugin-generated technical DOM where safe prose cannot be established.
 
-## Development installation
-
-1. Use Node.js 24 and run `npm ci`.
-2. Run `npm run check`.
-3. Copy `main.js`, `manifest.json`, and `styles.css` into `<vault>/.obsidian/plugins/obsidian-publishing-typography/`.
-4. Reload Obsidian and enable **Typesetter** under Community plugins.
-
-The fixture at `fixtures/typography-test.md` covers the manual acceptance cases.
+Visible prose in headings, lists, blockquotes, tables, callouts, footnotes, and link
+labels may still be typeset. A missed conversion is preferable to a conversion inside
+technical or structural content.
 
 ## Settings
 
-The settings page contains Rendering, Dashes, Symbols, Punctuation, and Safety sections. Simplified Chinese, Traditional Chinese, Japanese, and Korean handling are independent switches rather than a mutually exclusive document region. Live Preview, Reading View, native PDF rendering, deterministic shorthand rules, and **Reveal source token at cursor** are enabled by default. Source Mode typography, regional punctuation glyph shaping, curly-quote glyph shaping, operator-like double arrows, and heuristic visual punctuation correction are disabled by default.
+The interface follows Obsidian's language and includes English, Simplified Chinese,
+Traditional Chinese, Japanese, and Korean. Hong Kong and Macau locale codes use the
+Traditional Chinese interface; unsupported locales fall back to English.
+
+Setting names describe the typographic result. Source and display characters are shown
+separately in descriptions to avoid ambiguous “token to token” labels.
+
+| Section | Controls | Defaults |
+| --- | --- | --- |
+| Rendering | Global rendering, Source Mode, Live Preview, Reading View, print/PDF output, reveal at cursor | Global on; Source Mode off; others on |
+| Dashes | En dash shorthand, em dash shorthand, numerical ranges | On |
+| Symbols | Six single-line arrows and six operator-like double arrows | Single-line on; double-line off |
+| Punctuation | Two ellipses, CJK glyph and quote shaping, four CJK systems, six corrections | Ellipses and CJK systems on; shaping and corrections off |
+| Safety | Read-only summary of protected contexts | Always enforced |
+
+## How it works
+
+~~~text
+Obsidian syntax tree or rendered DOM
+        ↓
+approved ordinary-prose spans
+        ↓
+pure typography engine
+        ↓
+CodeMirror decorations or paired rendered-DOM tokens
+~~~
+
+The typography engine has no Markdown, DOM, or Obsidian knowledge. Adapters approve
+safe text first; the engine collects candidates, resolves overlaps deterministically,
+and returns display replacements.
+
+Source Mode and Live Preview use CodeMirror 6 decorations over visible ranges. Reading
+View uses an Obsidian Markdown post processor and changes visible text nodes only.
+Print CSS selects the typeset half of paired DOM tokens. No path writes a note or
+dispatches a source-replacement edit.
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for implementation and trust boundaries.
+
+## Development
+
+Requirements: Node.js 24, npm 11, and Obsidian 1.7.2 or later for runtime testing.
+
+~~~bash
+npm ci                 # reproducible dependency installation
+npm run dev            # watch build
+npm run build          # strict TypeScript and production bundle
+npm run lint           # ESLint
+npm test               # Vitest
+npm run check:release  # manifest and release metadata
+npm run check          # complete local and CI gate
+~~~
+
+Use [`fixtures/typography-test.md`](fixtures/typography-test.md) for manual acceptance
+and confirm its hash is unchanged. Do not commit generated `main.js`, local vault data,
+`node_modules`, coverage output, or temporary release notes.
+
+## Release process
+
+1. Synchronize `package.json`, `package-lock.json`, `manifest.json`, `versions.json`,
+   both READMEs, and `CHANGELOG.md`.
+2. Run `npm run check`.
+3. Create a bare semantic-version tag matching the manifest, such as `0.1.0`.
+4. Push the commit and tag.
+5. GitHub Actions rebuilds tagged source and publishes exactly `main.js`,
+   `manifest.json`, and `styles.css`.
+
+See [`.github/workflows/release.yml`](.github/workflows/release.yml).
 
 ## Known limitations
 
-- Source Mode rendering is optional and disabled by default so literal Markdown remains the default editing experience.
-- Unicode heuristics are local and conservative. Han-only text does not contain enough information to infer mainland, Taiwan, Hong Kong, Macau, or Japanese typography; use input-method punctuation and explicit language markup where regional glyph selection matters.
-- English, Simplified Chinese, and Korean can all use the same curly quote code points (`U+2018`–`U+201D`). If different input methods write the same code points, their origin cannot be recovered after insertion; explicit language metadata is the reliable override.
-- PDF typography targets Obsidian's native print-media export. Third-party exporters that ignore print CSS may require a future adapter; there is no Better Export PDF-specific dependency.
-- Automated tests cover the pure engine and safety policy. Final interaction behavior still requires a manual Obsidian acceptance pass because CodeMirror syntax node names and export timing are host-version dependent.
+- Mobile-compatible architecture does not replace hands-on testing for each Obsidian
+  mobile release.
+- Han-only text cannot identify a regional Chinese or Japanese publishing convention.
+- Different input methods may write identical curly-quote code points; explicit
+  language metadata is the reliable override.
+- Exporters that skip Obsidian's post-processed DOM or print CSS need an adapter.
+- Host-controlled syntax-node names and export timing require manual Obsidian testing
+  in addition to automated tests.
 
-## Installing a release
+## Project policies
 
-Download `main.js`, `manifest.json`, and `styles.css` from the matching [GitHub release](https://github.com/ichenh/obsidian-typesetter/releases), then place them in `<vault>/.obsidian/plugins/obsidian-publishing-typography/`. The plugin has not yet been accepted into Obsidian's community plugin directory.
+Typesetter is an independent community project under the [MIT License](LICENSE). It
+has no paid edition, licensing service, telemetry, advertising, or commercial gate.
 
-## Open-source project
-
-Typesetter is a free, open-source, local-first project under the MIT License. Runtime behavior is limited to local Obsidian rendering and settings storage. See [SECURITY.md](SECURITY.md), [CONTRIBUTING.md](CONTRIBUTING.md), and [ROADMAP.md](ROADMAP.md).
-
-Chinese documentation: [README.zh-CN.md](README.zh-CN.md).
+- [Contributing](CONTRIBUTING.md)
+- [Security policy](SECURITY.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Roadmap](ROADMAP.md)
+- [AI assistance disclosure](AI-ASSISTANCE.md)
+- [Third-party notices](THIRD-PARTY-NOTICES.md)

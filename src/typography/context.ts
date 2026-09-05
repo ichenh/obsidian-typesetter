@@ -1,6 +1,6 @@
-import type { PublishingTypographySettings } from "../types";
+import type { TypesetterSettings } from "../types";
 
 export interface TypographyContext {
-  settings: Readonly<PublishingTypographySettings>;
+  settings: Readonly<TypesetterSettings>;
   language?: string;
 }

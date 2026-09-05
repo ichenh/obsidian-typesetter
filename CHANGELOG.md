@@ -2,6 +2,14 @@
 
 All notable changes to Typesetter are documented in this file.
 
+## [0.1.1] - 2026-09-05
+
+### Changed
+
+- Renamed the plugin ID, package name, internal runtime identifiers, CSS classes, and installation directory to `typesetter` to satisfy the current Obsidian manifest rules.
+- Expanded the bilingual repository documentation and contribution templates to document mobile support, exporter compatibility, architecture, verification, and project policies.
+- Clarified the independent output setting as print and PDF rendering rather than a built-in PDF generator.
+
 ## [0.1.0] - 2026-09-05
 
 ### Added

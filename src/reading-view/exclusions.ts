@@ -28,7 +28,7 @@ const EXCLUDED_SELECTOR = [
   ".footnote-link",
   ".block-language-tikz",
   "[data-property-key]",
-  ".publishing-typography-token",
+  ".typesetter-token",
   "[class*='language-tikz']",
   "[contenteditable='true']",
 ].join(",");

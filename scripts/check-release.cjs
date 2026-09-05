@@ -21,15 +21,21 @@ const releaseAssets = ["main.js", "manifest.json", "styles.css"];
 const releaseBadge =
   "img.shields.io/github/v/release/ichenh/obsidian-typesetter?display_name=tag&sort=semver";
 
-checkEqual("package name", pkg.name, "obsidian-publishing-typography");
+checkEqual("package name", pkg.name, "typesetter");
 checkEqual("package main", pkg.main, "main.js");
-checkEqual("manifest id", manifest.id, "obsidian-publishing-typography");
+checkEqual("manifest id", manifest.id, "typesetter");
 checkEqual("manifest name", manifest.name, "Typesetter");
 checkEqual("manifest description", manifest.description, pkg.description);
 checkEqual("manifest author", manifest.author, pkg.author);
 checkEqual("package-lock name", lock.name, pkg.name);
 checkEqual("package-lock root name", lock.packages?.[""]?.name, pkg.name);
 checkEqual("package private flag", pkg.private, true);
+if (!/^[a-z-]+$/u.test(manifest.id)) {
+  errors.push("manifest id must contain only lowercase letters and hyphens");
+}
+if (manifest.id.includes("obsidian") || manifest.id.endsWith("plugin")) {
+  errors.push('manifest id must not contain "obsidian" or end with "plugin"');
+}
 
 for (const asset of releaseAssets) {
   const assetPath = path.join(ROOT, asset);

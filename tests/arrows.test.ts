@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_SETTINGS } from "../src/settings";
 import { TypographyEngine } from "../src/typography/engine";
-import type { PublishingTypographySettings } from "../src/types";
+import type { TypesetterSettings } from "../src/types";
 
 const engine = new TypographyEngine();
 const context = { settings: DEFAULT_SETTINGS };
@@ -34,7 +34,7 @@ describe("ASCII arrows", () => {
   );
 
   const optionalArrows: Array<
-    [string, string, keyof PublishingTypographySettings]
+    [string, string, keyof TypesetterSettings]
   > = [
     ["A=>B", "A⇒B", "rightDoubleArrow"],
     ["A<=B", "A⇐B", "leftDoubleArrow"],

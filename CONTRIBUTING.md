@@ -1,24 +1,70 @@
-# Contributing
+# Contributing to Typesetter
 
-Thank you for helping improve Typesetter.
+[简体中文](CONTRIBUTING.zh-CN.md)
 
-## Before opening a change
+Contributions should preserve Typesetter's non-destructive rendering guarantee,
+Obsidian compatibility, and conservative syntax safety. Read [AGENTS.md](AGENTS.md)
+before changing architecture, rules, protected-context logic, generated files, CI, or
+release metadata.
 
-Search existing issues and keep each proposal focused. Safety regressions in code, math, metadata, URLs, or Markdown syntax are higher priority than missed typography conversions.
+Participation is governed by the [Code of Conduct](CODE_OF_CONDUCT.md). Report
+vulnerabilities privately according to the [Security Policy](SECURITY.md), not through
+public issues.
 
-## Development
+## Development setup
 
-Requirements: Node.js 24 and npm 11.
+Use a Node.js version supported by `package.json`.
 
-```bash
+~~~bash
 npm ci
 npm run check
-```
+~~~
 
-Add pure-engine tests for rule behavior and safety tests for adapter changes. Use `fixtures/typography-test.md` for a final manual pass in Obsidian Source Mode, Live Preview, Reading View, and native PDF export. Confirm that the fixture remains byte-for-byte unchanged.
+The complete check includes ESLint, strict TypeScript, a production bundle, Vitest,
+and release-metadata validation. Use `npm ci` for a clean lockfile-reproducible
+installation, as CI and release jobs do.
 
-Do not add automatic document replacements, note writes, frontmatter mutation, clipboard rewriting, CodeMirror 5 APIs, or unprotected DOM rewriting. Preserve the layer boundary described in [ARCHITECTURE.md](ARCHITECTURE.md).
+Do not commit generated `main.js`, `node_modules`, coverage output, local vault data,
+or temporary release notes.
+
+## Making changes
+
+- Keep changes focused and preserve unrelated work.
+- Keep Markdown/DOM knowledge in adapters and pure transformations in
+  `src/typography/`.
+- Give every new typography behavior a deterministic rule and an independent setting.
+- Add focused engine tests for rules and adapter tests for protected contexts.
+- Keep `README.md` and `README.zh-CN.md` behaviorally consistent.
+- Keep all five locale bundles complete when interface text changes.
+- Record notable net changes under `CHANGELOG.md` → `Unreleased`.
+- Do not change version fields unless the maintainer authorizes a release.
+
+Never add note writes, editor source replacements, frontmatter mutation, clipboard
+rewriting, CodeMirror 5 APIs, or unsafe rendered-DOM mutation. A missed conversion is
+preferable to a transformation inside code, math, metadata, a URL, or Markdown syntax.
+
+## Verification
+
+Run the complete automated path before submitting:
+
+~~~bash
+npm run check
+~~~
+
+For editor, DOM, CSS, settings, localization, or export changes, also test
+`fixtures/typography-test.md` in the relevant Obsidian surfaces. Record the Obsidian
+version and platform, and confirm that the fixture's file hash is unchanged.
+
+Mobile claims require testing on the named mobile platform. Export claims must identify
+the host or export plugin and whether it uses Reading View post processors and print
+styles.
 
 ## Pull requests
 
-Explain the user-visible behavior, safety impact, tests run, and any manual Obsidian versions exercised. Generated `main.js`, coverage output, local vaults, and release notes files must not be committed.
+Explain the problem, chosen behavior, safety impact, affected surfaces, and verification
+performed. Call out compatibility or setting-migration effects. Do not describe
+untested runtime behavior as confirmed.
+
+If AI-assisted tools materially shaped the contribution, disclose that use and follow
+[AI-ASSISTANCE.md](AI-ASSISTANCE.md). Contributors remain responsible for correctness,
+license compatibility, provenance, and confidential information.

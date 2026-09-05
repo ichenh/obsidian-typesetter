@@ -1,6 +1,6 @@
 export type CjkTypographySystem = "zh" | "zh-Hans" | "zh-Hant" | "ja" | "ko";
 
-export interface PublishingTypographySettings {
+export interface TypesetterSettings {
   schemaVersion: number;
   enabled: boolean;
   sourceMode: boolean;
@@ -40,6 +40,6 @@ export interface PublishingTypographySettings {
 }
 
 export type BooleanSettingKey = Exclude<
-  keyof PublishingTypographySettings,
+  keyof TypesetterSettings,
   "schemaVersion"
 >;

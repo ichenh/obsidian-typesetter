@@ -31,7 +31,7 @@ export class TypographyWidget extends WidgetType {
   toDOM(view: EditorView): HTMLElement {
     const ownerWindow = view.dom.win as ObsidianWindow;
     const span = ownerWindow.createSpan();
-    span.className = "publishing-typography-widget";
+    span.className = "typesetter-widget";
     span.dataset.typographyRule = this.ruleId;
     if (this.language) span.lang = this.language;
     span.setAttribute("aria-label", this.source);

@@ -5,19 +5,44 @@ labels: [bug]
 body:
   - type: markdown
     attributes:
-      value: Thank you for helping make typography rendering safer.
+      value: |
+        Thanks for reporting a problem. Remove private vault content, credentials, and unrelated personal information before submitting.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I reproduced the problem with the latest Typesetter release.
+          required: true
+        - label: I searched existing issues for the same problem.
+          required: true
+        - label: This is not a security vulnerability. Security reports must follow SECURITY.md.
+          required: true
   - type: input
-    id: version
+    id: plugin-version
     attributes:
       label: Typesetter version
       placeholder: 0.1.0
     validations:
       required: true
   - type: input
-    id: obsidian
+    id: obsidian-version
     attributes:
-      label: Obsidian version and platform
-      placeholder: Obsidian 1.x, Windows/macOS/Linux/iOS/Android
+      label: Obsidian version
+      placeholder: 1.x.x
+    validations:
+      required: true
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Android
+        - iOS/iPadOS
+        - Other
     validations:
       required: true
   - type: dropdown
@@ -28,7 +53,8 @@ body:
         - Source Mode
         - Live Preview
         - Reading View
-        - Native PDF export
+        - Print/PDF output
+        - Third-party export plugin
         - Multiple surfaces
     validations:
       required: true
@@ -50,6 +76,11 @@ body:
     attributes:
       label: Relevant settings and other plugins
       description: State which rule switches are enabled and whether the issue persists with other plugins disabled.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots, logs, or exporter details
+      description: Include only information needed to diagnose the problem. Name the export plugin and version when relevant.
   - type: checkboxes
     id: safety
     attributes:

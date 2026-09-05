@@ -1,7 +1,7 @@
-import type { PublishingTypographySettings } from "./types";
+import type { TypesetterSettings } from "./types";
 
 export function shouldRenderEditorMode(
-  settings: Readonly<PublishingTypographySettings>,
+  settings: Readonly<TypesetterSettings>,
   isLivePreview: boolean,
 ): boolean {
   if (!settings.enabled) return false;
@@ -9,7 +9,7 @@ export function shouldRenderEditorMode(
 }
 
 export function shouldPrepareRenderedDom(
-  settings: Readonly<PublishingTypographySettings>,
+  settings: Readonly<TypesetterSettings>,
 ): boolean {
   return settings.enabled && (settings.readingView || settings.pdfExport);
 }

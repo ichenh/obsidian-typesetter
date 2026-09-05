@@ -84,14 +84,14 @@ describe("Live Preview source reveal boundaries", () => {
 
     expect(specs).toEqual([
       expect.objectContaining({
-        class: "publishing-typography-glyph",
+      class: "typesetter-glyph",
         attributes: {
           "data-typography-rule": "cjk-punctuation-style",
           lang: "zh",
         },
       }),
       expect.objectContaining({
-        class: "publishing-typography-glyph",
+      class: "typesetter-glyph",
         attributes: {
           "data-typography-rule": "cjk-punctuation-style",
           lang: "zh",

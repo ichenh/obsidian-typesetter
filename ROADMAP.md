@@ -1,19 +1,54 @@
 # Roadmap
 
-Typesetter will remain a free, open-source, local-first Obsidian community plugin. Every future feature must preserve the rule that rendered typography never modifies Markdown source.
+[简体中文](ROADMAP.zh-CN.md)
 
-## Near term
+Typesetter will remain free, open source, local first, and non-destructive. This
+document records direction rather than promised dates. Safety and source preservation
+take precedence over typography coverage.
 
-- Complete hands-on acceptance testing across supported Obsidian desktop and mobile versions.
-- Validate Source Mode, Live Preview, Reading View, and native PDF output with representative themes and fonts.
-- Prepare the repository for submission to Obsidian's official community plugin directory.
-- Expand syntax-safety fixtures when Obsidian introduces or renames Markdown syntax nodes.
+## Next milestone: compatibility evidence and community submission
 
-## Later
+### Goal
 
-- Add conservative, independently configurable punctuation rules only when false-positive behavior is well understood.
-- Provide opt-in diagnostics that explain why a candidate was transformed or protected.
-- Add modular adapters for third-party exporters without writing temporary Markdown files.
-- Improve local CJK/Latin context detection while preserving technical notation.
+Turn the 0.1.x implementation into a documented compatibility baseline suitable for
+Obsidian's Community plugins directory.
 
-Items are directional rather than promised release dates. Safety, responsiveness, and source preservation take precedence over rule coverage.
+### Work
+
+- Complete hands-on acceptance on current desktop and mobile Obsidian releases.
+- Record Source Mode, Live Preview, Reading View, and print/PDF behavior separately.
+- Test representative default and community themes, proportional and monospace fonts,
+  mixed CJK/Latin input, selections, IME composition, links, tables, and callouts.
+- Build an export compatibility matrix that names each tested host or export plugin and
+  whether it uses post-processed Reading View DOM and print CSS.
+- Expand protected-context fixtures when Obsidian adds or renames syntax nodes.
+- Complete the official community-directory review without weakening safety guarantees.
+
+### Acceptance criteria
+
+- The plugin ID, release tag, manifest, folder name, and documentation all use
+  `typesetter` consistently.
+- Desktop and mobile claims name the tested Obsidian version and platform.
+- Source hashes remain unchanged across every acceptance path.
+- Code, math, TikZ, metadata, URLs, link targets, embeds, tags, block IDs, HTML, SVG,
+  scripts, styles, and Markdown structure remain literal.
+- Export support is claimed only for paths verified to retain Typesetter's rendered DOM
+  and styles.
+
+### Non-goals
+
+- No automatic note cleanup or source rewriting.
+- No blanket promise for all third-party exporters.
+- No aggressive language inference from Han characters alone.
+- No paid tier, account system, telemetry, advertising, or commercial feature gate.
+
+## Later candidates
+
+- Opt-in diagnostics explaining why a candidate was transformed or protected.
+- Dedicated adapters for widely used exporters that do not capture Obsidian's rendered
+  DOM, provided they never rewrite temporary or original Markdown.
+- Additional punctuation rules only after ambiguity and false-positive boundaries are
+  covered by tests.
+- Better local script context and explicit language metadata support.
+- A theme/font visual-regression corpus for dash, arrow, ellipsis, and CJK punctuation
+  alignment.

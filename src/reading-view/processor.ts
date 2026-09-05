@@ -1,11 +1,11 @@
 import type { TypographyEngine } from "../typography/engine";
-import type { PublishingTypographySettings } from "../types";
+import type { TypesetterSettings } from "../types";
 import { shouldPrepareRenderedDom } from "../rendering-modes";
 import { collectSafeTextNodes } from "./dom-walker";
 
 export interface ReadingViewRendererOptions {
   engine: TypographyEngine;
-  getSettings(): Readonly<PublishingTypographySettings>;
+  getSettings(): Readonly<TypesetterSettings>;
 }
 
 interface ObsidianWindow extends Window {
@@ -59,17 +59,17 @@ export class ReadingViewRenderer {
 
         const source = node.data.slice(replacement.from, replacement.to);
         const token = fragment.createSpan({
-          cls: "publishing-typography-token",
+      cls: "typesetter-token",
         });
         token.toggleClass("is-reading-enabled", settings.readingView);
         token.toggleClass("is-pdf-enabled", settings.pdfExport);
         token.dataset.typographyRule = replacement.ruleId;
         token.createSpan({
-          cls: "publishing-typography-source",
+      cls: "typesetter-source",
           text: source,
         });
         const rendered = token.createSpan({
-          cls: "publishing-typography-rendered",
+      cls: "typesetter-rendered",
           text: replacement.replacement,
         });
         if (inheritedLanguage || replacement.language) {
@@ -93,7 +93,7 @@ export class ReadingViewRenderer {
       if (
         source !== undefined &&
         token.isConnected &&
-        token.hasClass("publishing-typography-token")
+      token.hasClass("typesetter-token")
       ) {
         token.replaceWith(token.doc.createTextNode(source));
       }

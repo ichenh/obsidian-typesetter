@@ -1,7 +1,30 @@
-# Third-Party Notices
+# Third-party notices
 
-Typesetter is licensed under the MIT License; see [LICENSE](LICENSE).
+Typesetter source code is licensed under the [MIT License](LICENSE).
 
-The distributed plugin bundle contains project code and uses APIs supplied by the Obsidian host at runtime. CodeMirror and Obsidian packages are externalized from the release bundle. Build, lint, and test dependencies listed in `package-lock.json` are development tools and are not separately redistributed as plugin files.
+## Runtime host APIs
 
-Obsidian is a trademark of Dynalist Inc. This project is an independent community plugin and is not affiliated with or endorsed by Dynalist Inc.
+The distributed plugin uses APIs provided by Obsidian at runtime. The production build
+externalizes the following host modules and does not redistribute them as part of the
+plugin bundle:
+
+- `obsidian`;
+- `@codemirror/language`;
+- `@codemirror/state`;
+- `@codemirror/view`; and
+- `@lezer/common`.
+
+Obsidian is proprietary software and a trademark of Dynalist Inc. Typesetter is an
+independent community plugin and is not affiliated with or endorsed by Dynalist Inc.
+CodeMirror and Lezer are distributed by their respective maintainers under their own
+licenses.
+
+## Development dependencies
+
+TypeScript, esbuild, ESLint, Vitest, Obsidian API type packages, and other packages
+listed in `package-lock.json` are development tools. They are used to type-check,
+bundle, lint, and test the project and are not shipped as separate release files.
+
+The release workflow publishes exactly `main.js`, `manifest.json`, and `styles.css`.
+It does not download code at runtime or bundle another Obsidian plugin, PDF renderer,
+font, language model, telemetry library, or commercial licensing component.
