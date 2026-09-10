@@ -12,7 +12,7 @@
   <a href="https://github.com/ichenh/obsidian-typesetter/actions/workflows/release.yml"><img alt="发布" src="https://github.com/ichenh/obsidian-typesetter/actions/workflows/release.yml/badge.svg"></a>
 </p>
 
-当前版本：v0.1.2
+当前版本：v0.1.3
 
 需要 Obsidian **1.7.2 或更高版本**。
 
@@ -129,6 +129,16 @@ npm run build
 | `2025-2027`、`pp. 15-23` | 使用 `–` 的数字范围 | 开 | 保守识别；减法和科学计数法保持原样。 |
 
 Markdown 分割线和前置元数据分隔符属于结构语法，绝不会按破折号简写处理。
+
+嵌套列表中的安全正文同样支持破折号简写，包括带粗体或斜体的列表文字：
+
+~~~markdown
+- Drawing tangents:
+    - The "long--line" principle----extend the tangent.
+~~~
+
+转换出的破折号继承周围正文的字体。区域 CJK 标点字体仅在标点规则明确选择时生效，
+不会仅因界面语言而改变破折号简写的字体；具体字形仍取决于笔记字体和主题。
 
 ### 箭头
 

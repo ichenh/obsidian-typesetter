@@ -59,6 +59,11 @@ frontmatter. It can therefore be tested independently of Obsidian.
 visible ranges, expands only enough context for a rule to make a local decision, and
 rejects candidates that intersect protected syntax or unsafe line structures.
 
+Indented prose is accepted only when both replacement endpoints have list syntax
+evidence. Compound stream-token styles are checked individually, while protected
+ancestors always take precedence. Decorations are recalculated when the syntax tree
+changes, including effects-only updates from background parsing.
+
 Source Mode and Live Preview share the adapter but have independent settings.
 Replacement decorations never alter `EditorState.doc`. When reveal-at-cursor is
 enabled, a source range intersecting a selection is not replaced, making the literal
@@ -75,6 +80,11 @@ When a text node changes, the adapter emits paired literal and typeset spans. Sc
 and print CSS choose which member is visible, allowing Reading View and print/PDF
 rendering to remain independent. Export compatibility therefore depends on the host or
 exporter using Obsidian's post-processed DOM and honoring the relevant styles.
+
+Document language is passed to the typography engine as context. A generated glyph
+receives its own `lang` attribute only when the rule explicitly supplies a language.
+Regional font selectors require that attribute on the glyph itself, so inherited
+interface or paragraph language does not change ordinary dash shorthand fonts.
 
 ## Protected content
 

@@ -59,14 +59,15 @@
   letter-spacing: normal;
 }
 
-:is(.typesetter-widget, .typesetter-glyph, .typesetter-rendered):lang(zh) {
+/* Regional fonts require a language assigned by a typography rule, not inherited UI language. */
+:is(.typesetter-widget[lang], .typesetter-glyph[lang], .typesetter-rendered[lang]):lang(zh) {
   font-family: var(--typesetter-cjk-punctuation-font-zh, serif);
 }
 
 :is(
-  .typesetter-widget,
-  .typesetter-glyph,
-  .typesetter-rendered
+  .typesetter-widget[lang],
+  .typesetter-glyph[lang],
+  .typesetter-rendered[lang]
 ):is(:lang(zh-Hans), :lang(zh-CN)) {
   font-family: var(
     --typesetter-cjk-punctuation-font-zh-cn,
@@ -79,9 +80,9 @@
 }
 
 :is(
-  .typesetter-widget,
-  .typesetter-glyph,
-  .typesetter-rendered
+  .typesetter-widget[lang],
+  .typesetter-glyph[lang],
+  .typesetter-rendered[lang]
 ):is(:lang(zh-Hant), :lang(zh-TW)) {
   font-family: var(
     --typesetter-cjk-punctuation-font-zh-tw,
@@ -94,9 +95,9 @@
 }
 
 :is(
-  .typesetter-widget,
-  .typesetter-glyph,
-  .typesetter-rendered
+  .typesetter-widget[lang],
+  .typesetter-glyph[lang],
+  .typesetter-rendered[lang]
 ):is(:lang(zh-HK), :lang(zh-MO)) {
   font-family: var(
     --typesetter-cjk-punctuation-font-zh-hk,
@@ -108,7 +109,7 @@
   );
 }
 
-:is(.typesetter-widget, .typesetter-glyph, .typesetter-rendered):lang(ja) {
+:is(.typesetter-widget[lang], .typesetter-glyph[lang], .typesetter-rendered[lang]):lang(ja) {
   font-family: var(
     --typesetter-cjk-punctuation-font-ja,
     "Source Han Serif",
@@ -119,7 +120,7 @@
   );
 }
 
-:is(.typesetter-widget, .typesetter-glyph, .typesetter-rendered):lang(ko) {
+:is(.typesetter-widget[lang], .typesetter-glyph[lang], .typesetter-rendered[lang]):lang(ko) {
   font-family: var(
     --typesetter-cjk-punctuation-font-ko,
     "Source Han Serif K",
@@ -131,9 +132,9 @@
 }
 
 :is(
-  .typesetter-widget,
-  .typesetter-glyph,
-  .typesetter-rendered
+  .typesetter-widget[lang],
+  .typesetter-glyph[lang],
+  .typesetter-rendered[lang]
 ):is(:lang(zh), :lang(ja), :lang(ko)) {
   font-feature-settings: "locl" 1;
 }

@@ -44,6 +44,18 @@ export function hasProtectedSyntaxAncestor(names: readonly string[]): boolean {
   return names.some(isProtectedSyntaxNodeName);
 }
 
+export function hasListSyntaxAncestor(names: readonly string[]): boolean {
+  return names.some((name) =>
+    // StreamLanguage joins simultaneous styles (for example list-2 + strong)
+    // with underscores. Check each style without merging away its boundaries.
+    name.split(/[\s_]+/u).some((part) =>
+      /^(?:bulletlist|orderedlist|listitem|list\d*|hypermdlistline\d*)$/u.test(
+        part.toLowerCase().replace(/[^a-z0-9]/gu, ""),
+      ),
+    ),
+  );
+}
+
 function liesInside(
   text: string,
   offset: number,
@@ -100,6 +112,7 @@ export function isUnsafeRawMarkdownRange(
   text: string,
   from: number,
   to: number,
+  isListText = false,
 ): boolean {
   if (from < 0 || to > text.length || from >= to) return true;
   if (isLikelyUrlAt(text, from)) return true;
@@ -109,7 +122,7 @@ export function isUnsafeRawMarkdownRange(
   const lineTo = nextBreak === -1 ? text.length : nextBreak;
   const line = text.slice(lineFrom, lineTo);
   if (/^\s*-{3,}\s*$/u.test(line)) return true;
-  if (/^(?: {4}|\t)/u.test(line)) return true;
+  if (!isListText && /^(?: {4}|\t)/u.test(line)) return true;
   if (isInsidePairedDelimiter(line, from, to, "`")) return true;
   if (isInsidePairedDelimiter(line, from, to, "$$")) return true;
   if (isInsidePairedDelimiter(line, from, to, "$")) return true;

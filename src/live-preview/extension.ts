@@ -9,7 +9,7 @@ import { editorLivePreviewField } from "obsidian";
 import { shouldRenderEditorMode } from "../rendering-modes";
 import { TypographyEngine } from "../typography/engine";
 import type { TypesetterSettings } from "../types";
-import { buildTypographyDecorations } from "./decorations";
+import { buildTypographyDecorations, shouldRebuildTypographyDecorations } from "./decorations";
 
 export interface TypographyExtensionOptions {
   getSettings(): Readonly<TypesetterSettings>;
@@ -81,9 +81,7 @@ export function createTypographyLivePreviewExtension(
         const nextSettingsKey = settingsKey(settings);
         const nextLivePreview = isLivePreview(update.view);
         if (
-          update.docChanged ||
-          update.viewportChanged ||
-          update.selectionSet ||
+          shouldRebuildTypographyDecorations(update) ||
           nextSettingsKey !== this.currentSettingsKey ||
           nextLivePreview !== this.livePreview
         ) {

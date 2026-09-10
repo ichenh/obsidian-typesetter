@@ -12,7 +12,7 @@
   <a href="https://github.com/ichenh/obsidian-typesetter/actions/workflows/release.yml"><img alt="Release" src="https://github.com/ichenh/obsidian-typesetter/actions/workflows/release.yml/badge.svg"></a>
 </p>
 
-Current release: v0.1.2
+Current release: v0.1.3
 
 Requires Obsidian **1.7.2 or later**.
 
@@ -132,6 +132,19 @@ content.
 
 Markdown thematic breaks and frontmatter delimiters are structural syntax and are
 never treated as dash shorthands.
+
+Dash shorthands also work in safe prose inside nested lists, including bold or italic
+list text:
+
+~~~markdown
+- Drawing tangents:
+    - The "long--line" principle----extend the tangent.
+~~~
+
+Dash replacements inherit the surrounding text font. Regional CJK punctuation fonts
+apply only when a punctuation rule explicitly selects them; the interface language
+alone does not change the font of dash shorthands. Glyph appearance still depends on
+the note's font and theme.
 
 ### Arrows
 

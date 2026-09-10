@@ -1,13 +1,22 @@
+import { syntaxTree } from "@codemirror/language";
 import type { Range, SelectionRange } from "@codemirror/state";
 import {
   Decoration,
   type DecorationSet,
+  type ViewUpdate,
   EditorView,
 } from "@codemirror/view";
 import type { TypographyEngine } from "../typography/engine";
 import type { TypesetterSettings } from "../types";
 import { isSafePlainTextRange } from "./safe-range";
 import { TypographyWidget } from "./widget";
+
+export function shouldRebuildTypographyDecorations(
+  update: Pick<ViewUpdate, "docChanged" | "viewportChanged" | "selectionSet" | "startState" | "state">,
+): boolean {
+  return update.docChanged || update.viewportChanged || update.selectionSet ||
+    syntaxTree(update.startState) !== syntaxTree(update.state);
+}
 
 export function intersectsSelection(
   from: number,

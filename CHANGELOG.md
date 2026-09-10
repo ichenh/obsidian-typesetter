@@ -4,6 +4,14 @@ All notable changes to Typesetter are documented in this file.
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-09-10
+
+### Fixed
+
+- Restored dash shorthand rendering in indented nested-list prose, including combined list and emphasis styles, while preserving code, math, links, and other protected syntax.
+- Refresh editor typography when the syntax tree changes after background parsing, without requiring an additional edit or cursor movement.
+- Keep dash shorthands in the surrounding text font by limiting regional CJK font overrides to glyphs with language metadata explicitly supplied by a typography rule, in both editor and Reading View/print rendering.
+
 ## [0.1.2] - 2026-09-05
 
 ### Fixed

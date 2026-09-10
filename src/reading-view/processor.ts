@@ -72,8 +72,8 @@ export class ReadingViewRenderer {
       cls: "typesetter-rendered",
           text: replacement.replacement,
         });
-        if (inheritedLanguage || replacement.language) {
-          rendered.lang = replacement.language || inheritedLanguage || "";
+        if (replacement.language) {
+          rendered.lang = replacement.language;
         }
         this.tokenSources.set(token, source);
         this.tokens.add(token);
