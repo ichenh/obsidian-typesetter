@@ -4,7 +4,7 @@ import { DEFAULT_SETTINGS, normalizeSettings } from "../src/settings";
 describe("settings", () => {
   it("defaults rendered views on while keeping source mode literal", () => {
     expect(DEFAULT_SETTINGS).toMatchObject({
-      schemaVersion: 8,
+      schemaVersion: 9,
       enabled: true,
       sourceMode: false,
       livePreview: true,
@@ -40,7 +40,7 @@ describe("settings", () => {
 
   it("migrates the 0.1.0 explicit en-dash key and stamps the schema", () => {
     expect(normalizeSettings({ explicitEnDash: false, schemaVersion: 1 })).toMatchObject({
-      schemaVersion: 8,
+      schemaVersion: 9,
       enDash: false,
     });
   });
@@ -53,7 +53,7 @@ describe("settings", () => {
         commaCorrection: true,
       }),
     ).toMatchObject({
-      schemaVersion: 8,
+      schemaVersion: 9,
       cjkPunctuationStyle: false,
       cjkCurlyQuoteStyle: false,
       periodCorrection: false,
@@ -66,7 +66,7 @@ describe("settings", () => {
         periodCorrection: true,
       }),
     ).toMatchObject({
-      schemaVersion: 8,
+      schemaVersion: 9,
       cjkPunctuationStyle: true,
       cjkCurlyQuoteStyle: true,
       periodCorrection: true,

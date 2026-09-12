@@ -18,6 +18,15 @@ function asHtmlElement(value: TestElement): HTMLElement {
 }
 
 describe("Reading View language inheritance", () => {
+  it("stops inherited language at an explicit empty language tag", () => {
+    const markdownRoot = element("zh-CN", null);
+    const section = element("", markdownRoot);
+    const paragraph = element(null, section);
+    expect(findInheritedLanguage(
+      asHtmlElement(paragraph), asHtmlElement(markdownRoot),
+    )).toBeUndefined();
+  });
+
   it("does not inherit Obsidian interface language above the Markdown root", () => {
     const appRoot = element("en", null);
     const markdownRoot = element(null, appRoot);

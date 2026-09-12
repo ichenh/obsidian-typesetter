@@ -53,24 +53,13 @@ describe("mixed Chinese and English punctuation", () => {
     expect(engine.render("他说：“等等......”", context)).toBe("他说：“等等……”");
   });
 
-  it("styles curly quote characters without inspecting their contents", () => {
+  it("styles complete CJK quotes while preserving English quotes", () => {
     const source = "中文“引号” English “quote” 中文‘内引号’";
     const replacements = engine
       .findReplacements(source, glyphContext)
       .filter((replacement) => replacement.ruleId === "cjk-punctuation-style");
-    expect(
-      replacements.map((replacement) => ({
-        punctuation: source.slice(replacement.from, replacement.to),
-        language: replacement.language,
-      })),
-    ).toEqual([
-      { punctuation: "“", language: "zh" },
-      { punctuation: "”", language: "zh" },
-      { punctuation: "“", language: "zh" },
-      { punctuation: "”", language: "zh" },
-      { punctuation: "‘", language: "zh" },
-      { punctuation: "’", language: "zh" },
-    ]);
+    expect(replacements).toHaveLength(4);
+    expect(replacements.map((replacement) => source.slice(replacement.from, replacement.to))).toEqual(["“", "”", "‘", "’"]);
     expect(engine.render(source, context)).toBe(source);
   });
 
@@ -81,25 +70,51 @@ describe("mixed Chinese and English punctuation", () => {
     expect(replacements).toEqual([]);
   });
 
-  it("follows quote source characters in mixed input-method text", () => {
+  it("preserves English curly quotes in mixed input-method text", () => {
     const source = '“s” "d" 的 “的”';
     const styled = engine
       .findReplacements(source, glyphContext)
       .filter((replacement) => replacement.ruleId === "cjk-punctuation-style")
       .map((replacement) => source.slice(replacement.from, replacement.to));
-    expect(styled).toEqual(["“", "”", "“", "”"]);
+    expect(styled).toEqual(["“", "”"]);
   });
+
+  it.each([
+    "He said “that’s correct.” It’s James’ book.",
+    "中文“English quotation”中文",
+    "中文‘English quotation’中文",
+    "中文 don’t 中文",
+    "中文 “123” 中文",
+    "中文 “” 中文",
+    "中文 “Ελληνικά” 中文",
+    "中文 “Русский” 中文",
+    "中文\n”\n中文",
+    "中文\n“\n中文",
+    "“",
+    "”",
+  ])("does not assign CJK glyphs to English or ambiguous quotes: %s", (source) => {
+    expect(engine.findReplacements(source, glyphContext)).toEqual([]);
+  });
+
+  it.each(["English “中文” English", "English ‘中文’ English"])(
+    "styles both ends of a complete CJK quotation: %s",
+    (source) => {
+      expect(engine.findReplacements(source, glyphContext)).toHaveLength(2);
+    },
+  );
 
   it("keeps regional punctuation and curly quote styling independently optional", () => {
     const source = "“引号”「括号」";
     const punctuationOnly = engine
       .findReplacements(source, {
         settings: { ...DEFAULT_SETTINGS, cjkPunctuationStyle: true },
+        language: "zh-CN",
       })
       .map((replacement) => source.slice(replacement.from, replacement.to));
     const quotesOnly = engine
       .findReplacements(source, {
         settings: { ...DEFAULT_SETTINGS, cjkCurlyQuoteStyle: true },
+        language: "zh-CN",
       })
       .map((replacement) => source.slice(replacement.from, replacement.to));
     expect(punctuationOnly).toEqual(["「", "」"]);
@@ -110,8 +125,8 @@ describe("mixed Chinese and English punctuation", () => {
     ["zh-CN", "zh-Hans"],
     ["zh-SG", "zh-Hans"],
     ["zh-TW", "zh-Hant"],
-    ["zh-HK", "zh-Hant"],
-    ["yue-HK", "zh-Hant"],
+    ["zh-HK", "zh-HK"],
+    ["yue-HK", "zh-HK"],
     ["ja-JP", "ja"],
     ["ko-KR", "ko"],
   ] as const)("honors explicit language %s before local script inference", (language, expected) => {
@@ -148,7 +163,7 @@ describe("mixed Chinese and English punctuation", () => {
       to: 6,
       replacement: "。",
       ruleId: "period-correction",
-      language: "zh",
+      language: "zh-Hans",
     });
   });
 
@@ -156,9 +171,9 @@ describe("mixed Chinese and English punctuation", () => {
     "「臺灣標點」",
     "「香港標點」",
     "「澳門標點」",
-  ])("recognizes traditional Chinese input punctuation in %s", (source) => {
+  ])("uses explicit traditional Chinese language for punctuation in %s", (source) => {
     const replacements = engine
-      .findReplacements(source, glyphContext)
+      .findReplacements(source, { ...glyphContext, language: "zh-TW" })
       .filter((replacement) => replacement.ruleId === "cjk-punctuation-style");
     expect(replacements.every((replacement) => replacement.language === "zh-Hant")).toBe(true);
     expect(replacements).toHaveLength(2);
@@ -169,7 +184,7 @@ describe("mixed Chinese and English punctuation", () => {
     expect(engine.render("これはテスト, 次です. まって...", correctionContext)).toBe(
       "これはテスト、次です。 まって…",
     );
-    expect(engine.findReplacements("「日本語です」", glyphContext)).toEqual([
+    expect(engine.findReplacements("「日本語です」", { ...glyphContext, language: "ja-JP" })).toEqual([
       expect.objectContaining({ language: "ja", ruleId: "cjk-punctuation-style" }),
       expect.objectContaining({ language: "ja", ruleId: "cjk-punctuation-style" }),
     ]);

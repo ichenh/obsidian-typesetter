@@ -1,6 +1,6 @@
 {
   "name": "typesetter",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "description": "Render publication-quality typography in prose without changing Markdown source, with syntax-aware protection for technical content.",
   "main": "main.js",

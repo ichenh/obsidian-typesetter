@@ -9,6 +9,9 @@ export const emDashRule: TypographyRule = {
   apply(text) {
     const replacements = [];
     for (const match of text.matchAll(/(?<!-)----(?!-)/gu)) {
+      // A disabled or unsupported arrow must not fall back to a dash token.
+      if (/[<>=]/u.test(text[match.index - 1] ?? "") ||
+          /[<>=]/u.test(text[match.index + match[0].length] ?? "")) continue;
       replacements.push({
         from: match.index,
         to: match.index + 4,

@@ -17,6 +17,7 @@ export const numericalRangeRule: TypographyRule = {
       const previous = text[numberStart - 1] ?? "";
       const rangeEnd = text.slice(hyphen + 1).match(/^\d{1,4}/u)?.[0] ?? "";
       const next = text[hyphen + 1 + rangeEnd.length] ?? "";
+      if (previous === "-" || next === "-") continue;
       if (/[.\p{Letter}\p{Number}]/u.test(previous)) continue;
       if (/[\p{Letter}\p{Number}]/u.test(next)) continue;
       if (next === "." && /\p{Number}/u.test(text[hyphen + 2 + rangeEnd.length] ?? "")) {

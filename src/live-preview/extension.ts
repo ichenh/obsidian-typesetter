@@ -38,6 +38,7 @@ function settingsKey(settings: Readonly<TypesetterSettings>): string {
     settings.longBidirectionalDoubleArrow,
     settings.ellipsis,
     settings.chineseEllipsis,
+    settings.chinesePunctuationRegion,
     settings.cjkPunctuationStyle,
     settings.cjkCurlyQuoteStyle,
     settings.simplifiedChinesePunctuation,

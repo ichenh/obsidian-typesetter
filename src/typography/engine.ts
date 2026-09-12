@@ -1,3 +1,4 @@
+import { isLikelyUrlAt } from "./scanner";
 import type { TypographyContext } from "./context";
 import type { TypographyReplacement, TypographyRule } from "./rule";
 import { arrowRules } from "./rules/arrows";
@@ -45,15 +46,21 @@ export class TypographyEngine {
   findReplacements(
     text: string,
     context: TypographyContext,
+    mode: "all" | "glyphs" | "substitutions" = "all",
   ): TypographyReplacement[] {
     const candidates: RankedReplacement[] = [];
     this.rules.forEach((rule, ruleOrder) => {
+      if (mode === "glyphs" && rule.kind !== "glyph") return;
+      if (mode === "substitutions" && rule.kind === "glyph") return;
       if (!rule.isEnabled(context)) return;
       for (const replacement of rule.apply(text, context)) {
         if (
           replacement.from < 0 ||
           replacement.to > text.length ||
-          replacement.from >= replacement.to
+          replacement.from >= replacement.to ||
+          (rule.kind === "glyph" && replacement.replacement !== text.slice(replacement.from, replacement.to)) ||
+          isLikelyUrlAt(text, replacement.from) ||
+          isLikelyUrlAt(text, replacement.to - 1)
         ) {
           continue;
         }

@@ -1,5 +1,6 @@
 import type { BooleanSettingKey } from "../../types";
 import {
+  allowsEnglishCorrection,
   isCjkSystemEnabled,
   languageForCjkSystem,
   resolveCjkSystem,
@@ -53,6 +54,7 @@ function createRegionalPunctuationRule(
 
         if (punctuation === spec.fullwidth) {
           if (
+            allowsEnglishCorrection(language) &&
             isLatinCharacter(previous.character) &&
             (!next || isLatinCharacter(next.character)) &&
             !hasCjkNearbyBefore(text, previous.offset)

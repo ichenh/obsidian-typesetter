@@ -12,7 +12,7 @@
   <a href="https://github.com/ichenh/obsidian-typesetter/actions/workflows/release.yml"><img alt="Release" src="https://github.com/ichenh/obsidian-typesetter/actions/workflows/release.yml/badge.svg"></a>
 </p>
 
-Current release: v0.1.3
+Current release: v0.1.4
 
 Requires Obsidian **1.7.2 or later**.
 
@@ -178,11 +178,16 @@ Chinese, Traditional Chinese, Japanese, and Korean punctuation, including fullwi
 and halfwidth forms such as `．`, `｡`, `､`, `｢｣`, `＂`, and `＇`.
 
 Regional punctuation shaping and shared curly-quote shaping are separate opt-in
-features. Full stop, comma, colon, semicolon, question mark, and exclamation mark
+features. Glyph display preserves the input characters; optional punctuation corrections
+and shorthand conversions have separate controls. Bold and italic formatting do not
+interrupt a continuous quotation, while code, math, images, and paragraph boundaries
+remain separate. Full stop, comma, colon, semicolon, question mark, and exclamation mark
 corrections are independent advanced rules and default to off. This avoids overriding
 the author's input method or editorial house style.
 
-Explicit inherited BCP 47 language metadata takes precedence in rendered HTML.
+For untagged Chinese text, **Default Chinese punctuation region** selects Simplified Chinese, Traditional Chinese (Taiwan), or Traditional Chinese (Hong Kong / Macau). This selects fonts only; it never converts quotation characters or edits notes. Japanese kana and Korean Hangul remain independent of this preference.
+
+Explicit inherited BCP 47 language metadata takes precedence in rendered HTML. Hong Kong and Macau tags remain distinct and use the Hong Kong font stack rather than the Taiwan stack. The regional font must be installed for its exact glyphs to be available.
 Japanese kana and Korean Hangul can identify local script, but Han characters alone
 cannot distinguish mainland Chinese, Taiwan, Hong Kong, Macau, or Japanese conventions.
 

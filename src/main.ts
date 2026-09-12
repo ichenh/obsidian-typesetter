@@ -10,7 +10,7 @@ import {
 import { TypesetterSettingTab } from "./settings-tab";
 import { TypographyEngine } from "./typography/engine";
 import type {
-  BooleanSettingKey,
+  SettingKey,
   TypesetterSettings,
 } from "./types";
 
@@ -72,9 +72,9 @@ export default class TypesetterPlugin extends Plugin {
     this.readingRenderer.restoreAll();
   }
 
-  async updateSetting(
-    key: BooleanSettingKey,
-    value: boolean,
+  async updateSetting<K extends SettingKey>(
+    key: K,
+    value: TypesetterSettings[K],
   ): Promise<void> {
     this.settings = { ...this.settings, [key]: value };
     await this.saveSettings();

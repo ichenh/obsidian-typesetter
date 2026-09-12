@@ -1,3 +1,4 @@
+import { cjkSystemFromLanguageTag, languageForCjkSystem } from "../cjk-context";
 import { isLikelyUrlAt } from "../scanner";
 import type { TypographyReplacement, TypographyRule } from "../rule";
 
@@ -9,8 +10,9 @@ export const ellipsisRule: TypographyRule = {
   enabledByDefault: true,
   priority: 90,
   isEnabled: ({ settings }) => settings.ellipsis || settings.chineseEllipsis,
-  apply(text, { settings }) {
+  apply(text, { settings, language }) {
     const replacements: TypographyReplacement[] = [];
+    const chineseSystem = language?.trim() ? cjkSystemFromLanguageTag(language) : "zh";
     for (const match of text.matchAll(ELLIPSIS_RE)) {
       if (isLikelyUrlAt(text, match.index)) continue;
       const to = match.index + match[0].length;
@@ -22,7 +24,9 @@ export const ellipsisRule: TypographyRule = {
         to,
         replacement: isChineseToken ? "……" : "…",
         ruleId: this.id,
-        language: isChineseToken ? "zh" : "en",
+        language: isChineseToken
+          ? (chineseSystem ? languageForCjkSystem(chineseSystem, settings) : undefined)
+          : "en",
       });
     }
     return replacements;

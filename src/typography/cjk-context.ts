@@ -5,9 +5,12 @@ import type {
 
 const HIRAGANA_OR_KATAKANA_RE = /[\p{Script=Hiragana}\p{Script=Katakana}]/u;
 const HANGUL_RE = /\p{Script=Hangul}/u;
-const TRADITIONAL_CORNER_QUOTES = new Set(["「", "」", "『", "』"]);
 const CONTEXT_BOUNDARY_RE =
   /[\s。．｡.!?！？；;，、､,:：()[\]{}<>《》〈〉「」『』｢｣“”‘’＂＇]/u;
+
+export function allowsEnglishCorrection(language?: string): boolean {
+  return !language?.trim() || language.trim().toLowerCase().split("-")[0] === "en";
+}
 
 export function isChineseSystem(system: CjkTypographySystem): boolean {
   return system.startsWith("zh");
@@ -17,7 +20,7 @@ export function detectCjkSystem(
   text: string,
   from: number,
   to: number,
-  punctuation = "",
+  _punctuation = "",
   maxDistance = 32,
 ): CjkTypographySystem {
   const minimum = Math.max(0, from - maxDistance);
@@ -43,7 +46,8 @@ export function detectCjkSystem(
   }
   if (japaneseDistance < koreanDistance) return "ja";
   if (koreanDistance < Number.POSITIVE_INFINITY) return "ko";
-  return TRADITIONAL_CORNER_QUOTES.has(punctuation) ? "zh-Hant" : "zh";
+  // Shared Han characters and corner quotes cannot identify a Chinese region.
+  return "zh";
 }
 
 export function cjkSystemFromLanguageTag(
@@ -53,14 +57,13 @@ export function cjkSystemFromLanguageTag(
   const primary = subtags[0];
   if (primary === "ja") return "ja";
   if (primary === "ko") return "ko";
-  if (primary === "yue") return "zh-Hant";
-  if (primary !== "zh") return null;
-  if (subtags.some((subtag) => ["hant", "tw", "hk", "mo"].includes(subtag))) {
-    return "zh-Hant";
-  }
-  if (subtags.some((subtag) => ["hans", "cn", "sg", "my"].includes(subtag))) {
-    return "zh-Hans";
-  }
+  if (primary !== "zh" && primary !== "yue") return null;
+  if (subtags.includes("hans")) return "zh-Hans";
+  if (subtags.includes("hk")) return "zh-HK";
+  if (subtags.includes("mo")) return "zh-MO";
+  if (subtags.some((subtag) => ["hant", "tw"].includes(subtag))) return "zh-Hant";
+  if (subtags.some((subtag) => ["cn", "sg", "my"].includes(subtag))) return "zh-Hans";
+  if (primary === "yue") return "zh-HK";
   return "zh";
 }
 
@@ -82,7 +85,9 @@ export function isCjkSystemEnabled(
   if (system === "ja") return settings.japanesePunctuation;
   if (system === "ko") return settings.koreanPunctuation;
   if (system === "zh-Hans") return settings.simplifiedChinesePunctuation;
-  if (system === "zh-Hant") return settings.traditionalChinesePunctuation;
+  if (system === "zh-Hant" || system === "zh-HK" || system === "zh-MO") {
+    return settings.traditionalChinesePunctuation;
+  }
   return (
     settings.simplifiedChinesePunctuation ||
     settings.traditionalChinesePunctuation
@@ -104,9 +109,9 @@ export function languageForCjkSystem(
     settings.traditionalChinesePunctuation &&
     !settings.simplifiedChinesePunctuation
   ) {
-    return "zh-Hant";
+    return settings.chinesePunctuationRegion === "zh-HK" ? "zh-HK" : "zh-Hant";
   }
-  return "zh";
+  return settings.chinesePunctuationRegion;
 }
 
 export function usesIdeographicSentencePunctuation(

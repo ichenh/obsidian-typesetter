@@ -8,6 +8,7 @@ import {
 } from "../scanner";
 import type { TypographyReplacement, TypographyRule } from "../rule";
 import {
+  allowsEnglishCorrection,
   commaForSystem,
   isCjkSystemEnabled,
   languageForCjkSystem,
@@ -38,6 +39,7 @@ export const periodCorrectionRule: TypographyRule = {
       if (punctuation !== ".") {
         if (
           previous &&
+          allowsEnglishCorrection(language) &&
           isLatinCharacter(previous.character) &&
           !hasCjkNearbyBefore(text, previous.offset)
         ) {
@@ -75,6 +77,7 @@ export const periodCorrectionRule: TypographyRule = {
 
       const immediatePrevious = text[index - 1] ?? "";
       const immediateNext = text[index + 1] ?? "";
+      if (immediatePrevious === "." || immediateNext === ".") continue;
       if (isDigit(immediatePrevious) && isDigit(immediateNext)) continue;
       if (isKnownAbbreviation(text, index)) continue;
       if (
@@ -152,6 +155,7 @@ export const commaCorrectionRule: TypographyRule = {
         });
       } else if (
         (punctuation === "，" || punctuation === "、" || punctuation === "､") &&
+        allowsEnglishCorrection(language) &&
         isLatinCharacter(previous.character) &&
         isLatinCharacter(next.character)
       ) {

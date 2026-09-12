@@ -1,6 +1,6 @@
-import type { TypesetterSettings } from "./types";
+import type { ChinesePunctuationRegion, TypesetterSettings } from "./types";
 
-export const SETTINGS_SCHEMA_VERSION = 8;
+export const SETTINGS_SCHEMA_VERSION = 9;
 
 export const DEFAULT_SETTINGS: TypesetterSettings = {
   schemaVersion: SETTINGS_SCHEMA_VERSION,
@@ -27,6 +27,7 @@ export const DEFAULT_SETTINGS: TypesetterSettings = {
   longBidirectionalDoubleArrow: false,
   ellipsis: true,
   chineseEllipsis: true,
+  chinesePunctuationRegion: "zh-Hans",
   cjkPunctuationStyle: false,
   cjkCurlyQuoteStyle: false,
   simplifiedChinesePunctuation: true,
@@ -41,6 +42,10 @@ export const DEFAULT_SETTINGS: TypesetterSettings = {
   exclamationMarkCorrection: false,
 };
 
+export function isChinesePunctuationRegion(value: unknown): value is ChinesePunctuationRegion {
+  return value === "zh-Hans" || value === "zh-Hant" || value === "zh-HK";
+}
+
 export function normalizeSettings(
   input: unknown,
 ): TypesetterSettings {
@@ -50,7 +55,7 @@ export function normalizeSettings(
   for (const key of Object.keys(DEFAULT_SETTINGS) as Array<
     keyof TypesetterSettings
   >) {
-    if (key === "schemaVersion") continue;
+    if (key === "schemaVersion" || key === "chinesePunctuationRegion") continue;
     if (typeof source[key] === "boolean") normalized[key] = source[key];
   }
   if (
@@ -58,6 +63,9 @@ export function normalizeSettings(
     typeof source.explicitEnDash === "boolean"
   ) {
     normalized.enDash = source.explicitEnDash;
+  }
+  if (isChinesePunctuationRegion(source.chinesePunctuationRegion)) {
+    normalized.chinesePunctuationRegion = source.chinesePunctuationRegion;
   }
   const sourceSchemaVersion =
     typeof source.schemaVersion === "number" ? source.schemaVersion : 0;

@@ -4,6 +4,30 @@ All notable changes to Typesetter are documented in this file.
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-09-13
+
+### Added
+
+- Chinese punctuation font preference for Simplified Chinese, Traditional Chinese (Taiwan), and Traditional Chinese (Hong Kong / Macau), independent of the system and Obsidian interface language.
+
+### Changed
+
+- Separate glyph-only rendering from shorthand substitutions and optional punctuation corrections. Glyph rules must preserve the input characters, and the settings present these controls in distinct groups.
+- Preserve English, mixed-language, unmatched, and ambiguous curly quotes by default while styling complete CJK-only quotation pairs and existing CJK punctuation. Explicit content language remains authoritative.
+
+### Fixed
+
+- Use an explicit Chinese font fallback for fullwidth Chinese quote glyphs without changing straight English quotes or Markdown source.
+- Keep Reading View quote styling across bold and italic text nodes while retaining boundaries around protected content and separate paragraphs; protect URL labels split by formatting.
+- Preserve Hong Kong and Macau language tags, respect explicit content language in punctuation correction, honor empty language-tag resets, and apply the selected Chinese font region to Chinese ellipsis shorthands.
+- Prevent date and multi-part number hyphens, bare URLs, disabled or unsupported arrows, and disabled ellipsis tokens from being partially converted by another typography rule.
+- Prevent punctuation inference from crossing line breaks or removing those breaks.
+
+### Verification
+
+- 304 automated tests, strict lint, TypeScript checks, production build, and release metadata validation pass. The typography fixture source hash is unchanged.
+- Manual acceptance in Obsidian Source Mode, Live Preview, Reading View, and PDF output remains pending. Exact regional glyphs depend on the corresponding installed fonts.
+
 ## [0.1.3] - 2026-09-10
 
 ### Fixed

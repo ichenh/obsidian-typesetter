@@ -7,28 +7,29 @@ import {
 } from "obsidian";
 import { t, type TranslationKey } from "./l10n/locale";
 import type TypesetterPlugin from "./main";
-import { DEFAULT_SETTINGS } from "./settings";
+import { DEFAULT_SETTINGS, isChinesePunctuationRegion } from "./settings";
 import type {
   BooleanSettingKey,
+  SettingKey,
   TypesetterSettings,
 } from "./types";
 
-interface ToggleSpec {
+interface SettingSpec {
   name(): string;
   description(): string;
-  key?: BooleanSettingKey;
+  key?: SettingKey;
 }
 
 interface SettingSection {
   heading(): string;
-  items: readonly ToggleSpec[];
+  items: readonly SettingSpec[];
 }
 
 function localized(
   nameKey: TranslationKey,
   descriptionKey: TranslationKey,
-  key?: BooleanSettingKey,
-): ToggleSpec {
+  key?: SettingKey,
+): SettingSpec {
   return {
     name: () => t(nameKey),
     description: () => t(descriptionKey),
@@ -42,7 +43,7 @@ function mapping(
   replacement: string,
   descriptionKey: TranslationKey,
   key: BooleanSettingKey,
-): ToggleSpec {
+): SettingSpec {
   return {
     name: () => t(nameKey, replacement),
     description: () => t(descriptionKey, source, replacement),
@@ -50,7 +51,7 @@ function mapping(
   };
 }
 
-function cjkSystem(nameKey: TranslationKey, key: BooleanSettingKey): ToggleSpec {
+function cjkSystem(nameKey: TranslationKey, key: BooleanSettingKey): SettingSpec {
   return {
     name: () => t(nameKey),
     description: () => t("cjkSystemDesc", t(nameKey)),
@@ -62,7 +63,7 @@ function correction(
   punctuationKey: TranslationKey,
   key: BooleanSettingKey,
   descriptionKey: TranslationKey = "visualCorrectionDesc",
-): ToggleSpec {
+): SettingSpec {
   return {
     name: () => t("visualCorrectionName", t(punctuationKey)),
     description: () => t(descriptionKey, t(punctuationKey)),
@@ -110,18 +111,29 @@ const SETTING_SECTIONS: readonly SettingSection[] = [
   {
     heading: () => t("headingPunctuation"),
     items: [
-      mapping("englishEllipsisName", "...", "…", "englishEllipsisDesc", "ellipsis"),
-      mapping("chineseEllipsisName", "......", "……", "chineseEllipsisDesc", "chineseEllipsis"),
       localized("cjkGlyphName", "cjkGlyphDesc", "cjkPunctuationStyle"),
       localized(
         "cjkCurlyQuoteName",
         "cjkCurlyQuoteDesc",
         "cjkCurlyQuoteStyle",
       ),
+      localized("chineseRegionName", "chineseRegionDesc", "chinesePunctuationRegion"),
       cjkSystem("simplifiedChineseName", "simplifiedChinesePunctuation"),
       cjkSystem("traditionalChineseName", "traditionalChinesePunctuation"),
       cjkSystem("japaneseName", "japanesePunctuation"),
       cjkSystem("koreanName", "koreanPunctuation"),
+    ],
+  },
+  {
+    heading: () => t("headingEllipsisShorthand"),
+    items: [
+      mapping("englishEllipsisName", "...", "…", "englishEllipsisDesc", "ellipsis"),
+      mapping("chineseEllipsisName", "......", "……", "chineseEllipsisDesc", "chineseEllipsis"),
+    ],
+  },
+  {
+    heading: () => t("headingPunctuationCorrections"),
+    items: [
       correction("fullStops", "periodCorrection"),
       correction("commas", "commaCorrection"),
       correction("colons", "colonCorrection", "colonCorrectionDesc"),
@@ -145,14 +157,24 @@ function isBooleanSettingKey(key: string): key is BooleanSettingKey {
   );
 }
 
+function chineseRegionOptions(): Record<string, string> {
+  return {
+    "zh-Hans": t("chineseRegionSimplified"),
+    "zh-Hant": t("chineseRegionTaiwan"),
+    "zh-HK": t("chineseRegionHongKong"),
+  };
+}
+
 function toDefinition(
-  spec: ToggleSpec,
-): SettingDefinition<BooleanSettingKey> {
+  spec: SettingSpec,
+): SettingDefinition<SettingKey> {
   if (!spec.key) return { name: spec.name(), desc: spec.description() };
   return {
     name: spec.name(),
     desc: spec.description(),
-    control: { type: "toggle", key: spec.key },
+    control: spec.key === "chinesePunctuationRegion"
+      ? { type: "dropdown", key: spec.key, options: chineseRegionOptions() }
+      : { type: "toggle", key: spec.key },
   };
 }
 
@@ -161,7 +183,7 @@ export class TypesetterSettingTab extends PluginSettingTab {
     super(app, plugin);
   }
 
-  getSettingDefinitions(): SettingDefinitionItem<BooleanSettingKey>[] {
+  getSettingDefinitions(): SettingDefinitionItem<SettingKey>[] {
     return [
       {
         name: t("settingsTitle"),
@@ -185,10 +207,15 @@ export class TypesetterSettingTab extends PluginSettingTab {
   }
 
   getControlValue(key: string): unknown {
-    return isBooleanSettingKey(key) ? this.plugin.settings[key] : undefined;
+    return key === "chinesePunctuationRegion" || isBooleanSettingKey(key)
+      ? this.plugin.settings[key] : undefined;
   }
 
   async setControlValue(key: string, value: unknown): Promise<void> {
+    if (key === "chinesePunctuationRegion" && isChinesePunctuationRegion(value)) {
+      await this.plugin.updateSetting(key, value);
+      return;
+    }
     if (!isBooleanSettingKey(key) || typeof value !== "boolean") return;
     await this.plugin.updateSetting(key, value);
   }
@@ -203,7 +230,19 @@ export class TypesetterSettingTab extends PluginSettingTab {
     for (const section of SETTING_SECTIONS) {
       new Setting(this.containerEl).setName(section.heading()).setHeading();
       for (const item of section.items) {
-        if (item.key) {
+        if (item.key === "chinesePunctuationRegion") {
+          new Setting(this.containerEl)
+            .setName(item.name())
+            .setDesc(item.description())
+            .addDropdown((dropdown) => dropdown
+              .addOptions(chineseRegionOptions())
+              .setValue(this.plugin.settings.chinesePunctuationRegion)
+              .onChange(async (value) => {
+                if (isChinesePunctuationRegion(value)) {
+                  await this.plugin.updateSetting("chinesePunctuationRegion", value);
+                }
+              }));
+        } else if (item.key) {
           this.addToggle(item, item.key);
         } else {
           new Setting(this.containerEl)
@@ -214,7 +253,7 @@ export class TypesetterSettingTab extends PluginSettingTab {
     }
   }
 
-  private addToggle(spec: ToggleSpec, key: BooleanSettingKey): void {
+  private addToggle(spec: SettingSpec, key: BooleanSettingKey): void {
     new Setting(this.containerEl)
       .setName(spec.name())
       .setDesc(spec.description())

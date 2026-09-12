@@ -35,6 +35,7 @@ export function findMeaningfulCharacter(
   let inspected = 0;
   while (index >= 0 && index < text.length && inspected < maxDistance) {
     const character = text[index];
+    if (/[\r\n\u2028\u2029]/u.test(character)) return null;
     if (!SKIPPABLE_RE.test(character)) return { character, offset: index };
     index += direction;
     inspected += 1;
@@ -57,7 +58,7 @@ export function isLikelyUrlAt(text: string, offset: number): boolean {
   const lineEnd = nextBreak === -1 ? text.length : nextBreak;
   const line = text.slice(lineStart, lineEnd);
   const localOffset = offset - lineStart;
-  const urlPattern = /(?:https?:\/\/|www\.)[^\s<>()]+/giu;
+  const urlPattern = /(?:[a-z][a-z\d+.-]*:\/\/|www\.|mailto:)[^\s<>()]+/giu;
   for (const match of line.matchAll(urlPattern)) {
     const from = match.index;
     const to = from + match[0].length;

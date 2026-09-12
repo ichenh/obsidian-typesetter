@@ -61,7 +61,15 @@
 
 /* Regional fonts require a language assigned by a typography rule, not inherited UI language. */
 :is(.typesetter-widget[lang], .typesetter-glyph[lang], .typesetter-rendered[lang]):lang(zh) {
-  font-family: var(--typesetter-cjk-punctuation-font-zh, serif);
+  /* A generic serif may select a narrow Western quote even with lang=zh. */
+  font-family: var(
+    --typesetter-cjk-punctuation-font-zh,
+    "Source Han Serif SC",
+    "Noto Serif CJK SC",
+    "Songti SC",
+    SimSun,
+    serif
+  );
 }
 
 :is(

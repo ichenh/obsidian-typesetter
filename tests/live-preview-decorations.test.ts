@@ -17,6 +17,26 @@ function testView(state: EditorState): EditorView {
 }
 
 describe("Live Preview source reveal boundaries", () => {
+  it("assigns a Chinese font only to the Chinese quotes in the reported mixed line", () => {
+    const source = 'Hi, welcome to Obsidian! “欢迎光临”你好 "Welcom!"';
+    const state = EditorState.create({ doc: source });
+    const decorations = buildTypographyDecorations(
+      testView(state), new TypographyEngine(),
+      { ...DEFAULT_SETTINGS, cjkCurlyQuoteStyle: true },
+    );
+    const styled: Array<{ text: string; spec: unknown }> = [];
+    decorations.between(0, source.length, (from, to, value) => {
+      styled.push({ text: source.slice(from, to), spec: value.spec });
+    });
+    expect(styled.map((entry) => entry.text)).toEqual(["“", "”"]);
+    for (const entry of styled) {
+      expect(entry.spec).toMatchObject({ attributes: {
+        "data-typography-rule": "cjk-punctuation-style", lang: "zh-Hans",
+      } });
+    }
+    expect(state.doc.toString()).toBe(source);
+  });
+
   it("reveals a token only while the caret is inside its source range", () => {
     expect(intersectsSelection(5, 7, [EditorSelection.cursor(5)])).toBe(true);
     expect(intersectsSelection(5, 7, [EditorSelection.cursor(6)])).toBe(true);
@@ -67,45 +87,31 @@ describe("Live Preview source reveal boundaries", () => {
     expect(decorations.size).toBe(1);
   });
 
-  it("keeps same-character regional glyph styling while selected", () => {
+  it("styles existing CJK punctuation while preserving selected source", () => {
+    const source = "「中」";
     const state = EditorState.create({
-      doc: "“s”",
-      selection: EditorSelection.range(0, 3),
+      doc: source,
+      selection: EditorSelection.range(0, source.length),
     });
     const decorations = buildTypographyDecorations(
       testView(state),
       new TypographyEngine(),
-      { ...DEFAULT_SETTINGS, cjkCurlyQuoteStyle: true },
+      { ...DEFAULT_SETTINGS, cjkPunctuationStyle: true, cjkCurlyQuoteStyle: true },
     );
-    const specs: unknown[] = [];
-    decorations.between(0, state.doc.length, (_from, _to, value) => {
-      specs.push(value.spec);
-    });
+    expect(decorations.size).toBe(2);
+    expect(state.doc.toString()).toBe(source);
+  });
 
-    expect(specs).toEqual([
-      expect.objectContaining({
-      class: "typesetter-glyph",
-        attributes: {
-          "data-typography-rule": "cjk-punctuation-style",
-          lang: "zh",
-        },
-      }),
-      expect.objectContaining({
-      class: "typesetter-glyph",
-        attributes: {
-          "data-typography-rule": "cjk-punctuation-style",
-          lang: "zh",
-        },
-      }),
-    ]);
-    expect(
-      specs.some(
-        (spec) =>
-          typeof spec === "object" &&
-          spec !== null &&
-          "widget" in spec,
-      ),
-    ).toBe(false);
+  it("does not decorate English quotes or change editor source", () => {
+    const source = "He said “that’s correct.” 中文“English”中文";
+    const state = EditorState.create({ doc: source });
+    const decorations = buildTypographyDecorations(
+      testView(state),
+      new TypographyEngine(),
+      { ...DEFAULT_SETTINGS, cjkPunctuationStyle: true, cjkCurlyQuoteStyle: true },
+    );
+    expect(decorations.size).toBe(0);
+    expect(state.doc.toString()).toBe(source);
   });
 
   it("keeps dash and arrow replacement ranges disjoint", () => {

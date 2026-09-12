@@ -12,6 +12,8 @@ export interface TypographyReplacement {
 }
 
 export interface TypographyRule {
+  /** Glyph rules may assign fonts but must preserve every source character. */
+  kind?: "glyph";
   id: string;
   name: string;
   enabledByDefault: boolean;

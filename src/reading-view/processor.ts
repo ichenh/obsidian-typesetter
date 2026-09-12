@@ -1,7 +1,8 @@
 import type { TypographyEngine } from "../typography/engine";
 import type { TypesetterSettings } from "../types";
 import { shouldPrepareRenderedDom } from "../rendering-modes";
-import { collectSafeTextNodes } from "./dom-walker";
+import { collectSafeTextRuns } from "./dom-walker";
+import { planGlyphStyles } from "./glyph-runs";
 
 export interface ReadingViewRendererOptions {
   engine: TypographyEngine;
@@ -18,8 +19,8 @@ export function findInheritedLanguage(
 ): string | undefined {
   let current = element;
   while (current) {
-    const language = current.getAttribute("lang")?.trim();
-    if (language) return language;
+    const language = current.getAttribute("lang");
+    if (language !== null) return language.trim() || undefined;
     if (current === boundary) break;
     current = current.parentElement;
   }
@@ -37,12 +38,21 @@ export class ReadingViewRenderer {
     const settings = this.options.getSettings();
     if (!shouldPrepareRenderedDom(settings)) return;
 
-    for (const node of collectSafeTextNodes(root)) {
-      const inheritedLanguage = findInheritedLanguage(node.parentElement, root);
-      const replacements = this.options.engine.findReplacements(node.data, {
-        settings,
-        language: inheritedLanguage,
-      });
+    const entries = collectSafeTextRuns(root).flatMap((run) => {
+      const segments = run.map((node) => ({
+        text: node.data,
+        language: findInheritedLanguage(node.parentElement, root),
+      }));
+      const styles = planGlyphStyles(segments, this.options.engine, settings);
+      return run.map((node, index) => ({ node, language: segments[index].language, styles: styles[index] }));
+    });
+    for (const { node, language, styles } of entries) {
+      const substitutions = this.options.engine.findReplacements(node.data, {
+        settings, language,
+      }, "substitutions");
+      const replacements = [...substitutions, ...styles.filter((style) =>
+        !substitutions.some((item) => style.from < item.to && item.from < style.to),
+      )].sort((left, right) => left.from - right.from);
       if (replacements.length === 0) continue;
 
       const ownerWindow = node.doc.win as ObsidianWindow;

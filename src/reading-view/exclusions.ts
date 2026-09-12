@@ -37,13 +37,17 @@ function looksLikeUrl(text: string): boolean {
   return /^(?:https?:\/\/|www\.|mailto:)[^\s]+$/iu.test(text.trim());
 }
 
+export function isExcludedElement(element: Element): boolean {
+  return element.closest(EXCLUDED_SELECTOR) !== null;
+}
+
 export function isExcludedTextNode(node: Text): boolean {
   const parent = node.parentElement;
   if (!parent) return true;
-  if (parent.closest(EXCLUDED_SELECTOR)) return true;
+  if (isExcludedElement(parent)) return true;
   const link = parent.closest("a");
   if (link) {
-    const visible = node.data.trim();
+    const visible = (link.textContent ?? node.data).trim();
     if (looksLikeUrl(visible)) return true;
     if (link.classList.contains("tag")) return true;
     const href = link.getAttribute("href");

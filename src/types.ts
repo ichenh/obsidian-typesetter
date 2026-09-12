@@ -1,4 +1,6 @@
-export type CjkTypographySystem = "zh" | "zh-Hans" | "zh-Hant" | "ja" | "ko";
+export type CjkTypographySystem = "zh" | "zh-Hans" | "zh-Hant" | "zh-HK" | "zh-MO" | "ja" | "ko";
+
+export type ChinesePunctuationRegion = "zh-Hans" | "zh-Hant" | "zh-HK";
 
 export interface TypesetterSettings {
   schemaVersion: number;
@@ -25,6 +27,7 @@ export interface TypesetterSettings {
   longBidirectionalDoubleArrow: boolean;
   ellipsis: boolean;
   chineseEllipsis: boolean;
+  chinesePunctuationRegion: ChinesePunctuationRegion;
   cjkPunctuationStyle: boolean;
   cjkCurlyQuoteStyle: boolean;
   simplifiedChinesePunctuation: boolean;
@@ -41,5 +44,7 @@ export interface TypesetterSettings {
 
 export type BooleanSettingKey = Exclude<
   keyof TypesetterSettings,
-  "schemaVersion"
+  "schemaVersion" | "chinesePunctuationRegion"
 >;
+
+export type SettingKey = BooleanSettingKey | "chinesePunctuationRegion";
