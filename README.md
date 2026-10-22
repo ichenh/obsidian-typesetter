@@ -12,7 +12,7 @@
   <a href="https://github.com/ichenh/obsidian-typesetter/actions/workflows/release.yml"><img alt="Release" src="https://github.com/ichenh/obsidian-typesetter/actions/workflows/release.yml/badge.svg"></a>
 </p>
 
-Current release: v0.1.4
+Current release: v0.1.5
 
 Requires Obsidian **1.7.2 or later**.
 
@@ -185,7 +185,15 @@ remain separate. Full stop, comma, colon, semicolon, question mark, and exclamat
 corrections are independent advanced rules and default to off. This avoids overriding
 the author's input method or editorial house style.
 
-For untagged Chinese text, **Default Chinese punctuation region** selects Simplified Chinese, Traditional Chinese (Taiwan), or Traditional Chinese (Hong Kong / Macau). This selects fonts only; it never converts quotation characters or edits notes. Japanese kana and Korean Hangul remain independent of this preference.
+For untagged Chinese text, **Default Chinese punctuation region** selects Simplified Chinese, Traditional Chinese (Taiwan), or Traditional Chinese (Hong Kong / Macau). This selects regional fonts and punctuation spacing while preserving input characters and notes. Japanese kana and Korean Hangul remain independent of this preference.
+
+With regional punctuation shaping enabled, the Mainland Chinese setting applies
+GB/T 15834—2011 spacing: the name separator `·` occupies half a character cell;
+`？？`, `！！`, and `？！` each occupy one cell in total; `？？？` and `！！！`
+each occupy two. Other terminal-punctuation combinations retain their spacing.
+Taiwan, Hong Kong, and Macau keep a full-cell name separator. Comma correction
+preserves enumeration commas `、` and `､`, and existing Chinese commas use the
+same regional font as corrected commas.
 
 Explicit inherited BCP 47 language metadata takes precedence in rendered HTML. Hong Kong and Macau tags remain distinct and use the Hong Kong font stack rather than the Taiwan stack. The regional font must be installed for its exact glyphs to be available.
 Japanese kana and Korean Hangul can identify local script, but Han characters alone

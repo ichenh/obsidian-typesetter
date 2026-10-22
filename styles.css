@@ -12,12 +12,49 @@
   display: none;
 }
 
-.typesetter-token.is-reading-enabled > .typesetter-source {
-  display: none;
+/* Keep source characters while assigning their regional punctuation spacing. */
+.typesetter-glyph[data-typography-width],
+.typesetter-rendered[data-typography-width] {
+  text-align: start;
+  letter-spacing: normal;
 }
 
-.typesetter-token.is-reading-enabled > .typesetter-rendered {
-  display: inline;
+.typesetter-glyph[data-typography-width="half"],
+.typesetter-rendered[data-typography-width="half"] {
+  inline-size: 0.5em;
+}
+
+.typesetter-glyph[data-typography-width="two-thirds"],
+.typesetter-rendered[data-typography-width="two-thirds"] {
+  inline-size: calc(2em / 3);
+}
+
+.typesetter-glyph[data-typography-width="full"],
+.typesetter-rendered[data-typography-width="full"] {
+  inline-size: 1em;
+}
+
+.typesetter-glyph[data-typography-align="center"],
+.typesetter-rendered[data-typography-align="center"] {
+  text-align: center;
+}
+
+.typesetter-glyph[data-typography-width] {
+  display: inline-block;
+}
+
+@media screen {
+  .typesetter-token.is-reading-enabled > .typesetter-source {
+    display: none;
+  }
+
+  .typesetter-token.is-reading-enabled > .typesetter-rendered {
+    display: inline;
+  }
+
+  .typesetter-token.is-reading-enabled > .typesetter-rendered[data-typography-width] {
+    display: inline-block;
+  }
 }
 
 @media print {
@@ -35,6 +72,10 @@
 
   .typesetter-token.is-pdf-enabled > .typesetter-rendered {
     display: inline;
+  }
+
+  .typesetter-token.is-pdf-enabled > .typesetter-rendered[data-typography-width] {
+    display: inline-block;
   }
 }
 

@@ -122,7 +122,8 @@ export const commaCorrectionRule: TypographyRule = {
     const replacements: TypographyReplacement[] = [];
     for (let index = 0; index < text.length; index += 1) {
       const punctuation = text[index];
-      if (![",", "，", "、", "､"].includes(punctuation)) continue;
+      // Enumeration commas are distinct punctuation, not sentence commas.
+      if (punctuation !== "," && punctuation !== "，") continue;
       if (isLikelyUrlAt(text, index)) continue;
       const previous = findMeaningfulCharacter(text, index - 1, -1);
       const next = findMeaningfulCharacter(text, index + 1, 1);
@@ -154,7 +155,7 @@ export const commaCorrectionRule: TypographyRule = {
           language: languageForCjkSystem(system, settings),
         });
       } else if (
-        (punctuation === "，" || punctuation === "、" || punctuation === "､") &&
+        punctuation === "，" &&
         allowsEnglishCorrection(language) &&
         isLatinCharacter(previous.character) &&
         isLatinCharacter(next.character)
@@ -168,7 +169,7 @@ export const commaCorrectionRule: TypographyRule = {
           language: "en",
         });
       } else if (
-        (punctuation === "，" || punctuation === "、" || punctuation === "､") &&
+        punctuation === "，" &&
         isCjkCharacter(previous.character) &&
         isCjkCharacter(next.character)
       ) {
@@ -181,15 +182,15 @@ export const commaCorrectionRule: TypographyRule = {
         );
         if (!system || !isCjkSystemEnabled(system, settings)) continue;
         const regionalComma = commaForSystem(system);
-        if (regionalComma !== punctuation) {
-          replacements.push({
-            from: index,
-            to: index + 1,
-            replacement: regionalComma,
-            ruleId: this.id,
-            language: languageForCjkSystem(system, settings),
-          });
-        }
+        // Existing commas need the same regional font as corrected commas.
+        // An unchanged character becomes an editable mark, not a cursor-revealed widget.
+        replacements.push({
+          from: index,
+          to: index + 1,
+          replacement: regionalComma,
+          ruleId: this.id,
+          language: languageForCjkSystem(system, settings),
+        });
       }
     }
     return replacements;

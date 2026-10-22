@@ -9,10 +9,12 @@ export interface TypographyReplacement {
   replacement: string;
   ruleId: string;
   language?: TypographyLanguage;
+  glyphWidth?: "half" | "two-thirds" | "full";
+  glyphAlign?: "center";
 }
 
 export interface TypographyRule {
-  /** Glyph rules may assign fonts but must preserve every source character. */
+  /** Glyph rules may assign fonts and widths but must preserve every source character. */
   kind?: "glyph";
   id: string;
   name: string;

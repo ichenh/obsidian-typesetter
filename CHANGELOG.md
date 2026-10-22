@@ -4,6 +4,23 @@ All notable changes to Typesetter are documented in this file.
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-10-22
+
+### Added
+
+- Opt-in regional spacing for Chinese name separators: `·` occupies half a character cell in Mainland Chinese and a full cell in Taiwan, Hong Kong, and Macau, preserving the source character across formatting and cursor movement.
+- Mainland Chinese terminal-punctuation spacing from GB/T 15834—2011: `？？`, `！！`, and `？！` occupy one character cell in total; `？？？` and `！！！` occupy two. Unspecified and mixed-width runs retain their spacing.
+
+### Fixed
+
+- Preserve `、` and `､` as enumeration commas when comma correction is enabled.
+- Give existing Chinese commas the same regional font as corrected commas, keeping their display stable at the cursor.
+- Respect the PDF output switch independently of Reading View when printing.
+
+### Removed
+
+- Unused legacy CJK-punctuation re-export module; punctuation rules are imported directly from their maintained module.
+
 ## [0.1.4] - 2026-09-13
 
 ### Added

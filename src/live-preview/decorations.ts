@@ -63,6 +63,8 @@ export function buildTypographyDecorations(
           "data-typography-rule": replacement.ruleId,
         };
         if (replacement.language) attributes.lang = replacement.language;
+        if (replacement.glyphWidth) attributes["data-typography-width"] = replacement.glyphWidth;
+        if (replacement.glyphAlign) attributes["data-typography-align"] = replacement.glyphAlign;
         decorations.push(
           Decoration.mark({
             class: "typesetter-glyph",

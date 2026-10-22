@@ -33,6 +33,29 @@ describe("glyph-only rendering", () => {
     expect(segments.map((segment) => segment.text).join("")).toBe('“欢迎光临”你好 "Welcom!"--');
   });
 
+  it("preserves a Chinese name separator split across formatting nodes", () => {
+    const segments = ["威廉", "·", "莎士比亚"].map((text) => ({ text }));
+    const styles = planGlyphStyles(segments, engine, settings);
+    expect(styles[0]).toEqual([]);
+    expect(styles[1]).toEqual([
+      { from: 0, to: 1, replacement: "·", ruleId: "cjk-punctuation-style", language: "zh-Hans", glyphWidth: "half", glyphAlign: "center" },
+    ]);
+    expect(styles[2]).toEqual([]);
+    expect(segments.map((segment) => segment.text).join("")).toBe("威廉·莎士比亚");
+  });
+
+  it("spaces a terminal pair split across formatting nodes without changing either character", () => {
+    const segments = ["真的吗", "？", "？"].map((text) => ({ text }));
+    const styles = planGlyphStyles(segments, engine, settings);
+    expect(styles[0]).toEqual([]);
+    for (const index of [1, 2]) {
+      expect(styles[index]).toEqual([
+        { from: 0, to: 1, replacement: "？", ruleId: "cjk-punctuation-style", language: "zh-Hans", glyphWidth: "half" },
+      ]);
+    }
+    expect(segments.map((segment) => segment.text).join("")).toBe("真的吗？？");
+  });
+
   it.each(["zh-TW", "zh-HK", "ja", "ko"])("keeps %s explicit glyph styling across nodes", (language) => {
     const styles = planGlyphStyles(["“", "漢字", "”"].map((text) => ({ text, language })), engine, settings);
     expect(styles[0]).toHaveLength(1);

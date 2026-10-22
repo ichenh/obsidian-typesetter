@@ -85,6 +85,8 @@ export class ReadingViewRenderer {
         if (replacement.language) {
           rendered.lang = replacement.language;
         }
+        if (replacement.glyphWidth) rendered.dataset.typographyWidth = replacement.glyphWidth;
+        if (replacement.glyphAlign) rendered.dataset.typographyAlign = replacement.glyphAlign;
         this.tokenSources.set(token, source);
         this.tokens.add(token);
         cursor = replacement.to;

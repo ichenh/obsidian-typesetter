@@ -47,6 +47,142 @@ describe("mixed Chinese and English punctuation", () => {
     expect(engine.render("中文, “中文”", correctionContext)).toBe("中文，“中文”");
   });
 
+  it.each([undefined, "zh-CN", "zh-TW", "ja-JP", "ko-KR", "en-US"])(
+    "preserves enumeration commas with comma correction enabled in %s",
+    (language) => {
+      const source = "从大气、地核､等出发 Apple、Banana､Cherry";
+      const replacements = engine.findReplacements(source, { ...correctionContext, language });
+      expect(replacements).toEqual([]);
+      expect(engine.render(source, { ...correctionContext, language })).toBe(source);
+    },
+  );
+
+  it.each(["zh-Hans", "zh-Hant", "zh-HK"] as const)(
+    "gives existing and corrected Chinese commas the same %s font",
+    (chinesePunctuationRegion) => {
+      const settings = { ...DEFAULT_SETTINGS, commaCorrection: true, chinesePunctuationRegion };
+      const source = "工匠，将一颗死星改造，从大气、地核、等出发";
+      const existing = engine.findReplacements(source, { settings });
+      const corrected = engine.findReplacements(source.replace(/，/gu, ","), { settings });
+      expect(existing).toHaveLength(2);
+      expect(existing).toEqual(corrected);
+      for (const replacement of existing) {
+        expect(replacement).toMatchObject({
+          replacement: "，", ruleId: "comma-correction", language: chinesePunctuationRegion,
+        });
+        expect(source.slice(replacement.from, replacement.to)).toBe("，");
+      }
+      expect(engine.render(source, { settings })).toBe(source);
+    },
+  );
+
+  it("keeps comma correction and general punctuation styling independent", () => {
+    const source = "大气，地核、等出发";
+    expect(engine.findReplacements(source, context)).toEqual([]);
+    const replacements = engine.findReplacements(source, glyphContext);
+    expect(replacements).toHaveLength(2);
+    expect(replacements.every((item) => item.ruleId === "cjk-punctuation-style")).toBe(true);
+    expect(engine.render(source, glyphContext)).toBe(source);
+  });
+
+  it.each([
+    ["威廉·莎士比亚", 1],
+    ["马丁·路德·金", 2],
+  ] as const)("styles Chinese name separators without changing %s", (source, count) => {
+    const replacements = engine.findReplacements(source, glyphContext);
+    expect(replacements).toHaveLength(count);
+    for (const replacement of replacements) {
+      expect(replacement).toMatchObject({
+        replacement: "·", ruleId: "cjk-punctuation-style", language: "zh-Hans",
+        glyphWidth: "half", glyphAlign: "center",
+      });
+      expect(source.slice(replacement.from, replacement.to)).toBe("·");
+    }
+    expect(engine.render(source, glyphContext)).toBe(source);
+  });
+
+  it.each(["l·l", "a · b", "N·m", "CuSO4·5H2O"])(
+    "does not infer Chinese middle-dot styling for %s", (source) => {
+      expect(engine.findReplacements(source, glyphContext)).toEqual([]);
+    },
+  );
+
+  it("keeps middle-dot styling behind the punctuation switch", () => {
+    const source = "威廉·莎士比亚";
+    expect(engine.findReplacements(source, context)).toEqual([]);
+    expect(engine.findReplacements(source, {
+      settings: { ...DEFAULT_SETTINGS, cjkCurlyQuoteStyle: true },
+    })).toEqual([]);
+  });
+
+  it("uses explicit Chinese language to style an isolated middle dot", () => {
+    expect(engine.findReplacements("·", { ...glyphContext, language: "zh-CN" })).toEqual([
+      { from: 0, to: 1, replacement: "·", ruleId: "cjk-punctuation-style", language: "zh-Hans", glyphWidth: "half", glyphAlign: "center" },
+    ]);
+  });
+
+  it.each(["zh-TW", "zh-HK", "zh-MO"])(
+    "preserves regional fullwidth name separators for %s", (language) => {
+      const source = "威廉·莎士比亚";
+      const replacements = engine.findReplacements(source, { ...glyphContext, language });
+      expect(replacements).toHaveLength(1);
+      expect(replacements[0]).toMatchObject({
+        replacement: "·", glyphWidth: "full", glyphAlign: "center",
+      });
+      expect(engine.render(source, { ...glyphContext, language })).toBe(source);
+    },
+  );
+
+  it.each(["en-US", "ja-JP", "ko-KR"])(
+    "honors explicit non-Chinese language %s for a middle dot", (language) => {
+      expect(engine.findReplacements("威廉·莎士比亚", { ...glyphContext, language })).toEqual([]);
+    },
+  );
+
+  it.each([
+    ["？？", "half"], ["！！", "half"], ["？！", "half"],
+    ["？？？", "two-thirds"], ["！！！", "two-thirds"],
+  ] as const)("applies national-standard spacing to the complete run %s", (source, glyphWidth) => {
+    const replacements = engine.findReplacements(source, glyphContext);
+    expect(replacements).toHaveLength(source.length);
+    for (const replacement of replacements) {
+      expect(replacement).toMatchObject({
+        ruleId: "cjk-punctuation-style", language: "zh-Hans", glyphWidth,
+      });
+      expect(replacement.replacement).toBe(source.slice(replacement.from, replacement.to));
+    }
+    expect(engine.render(source, glyphContext)).toBe(source);
+  });
+
+  it.each(["！？", "？？？？", "！！！！", "？！？", "！！？？"])(
+    "does not partially compress an unspecified terminal run %s", (source) => {
+      const replacements = engine.findReplacements(source, glyphContext);
+      expect(replacements).toHaveLength(source.length);
+      expect(replacements.every((item) => item.glyphWidth === undefined)).toBe(true);
+      expect(engine.render(source, glyphContext)).toBe(source);
+    },
+  );
+
+  it.each(["？？!", "?！！", "？？?"])(
+    "does not compress part of a mixed-width terminal run %s", (source) => {
+      const replacements = engine.findReplacements(source, glyphContext);
+      expect(replacements.every((item) => item.glyphWidth === undefined)).toBe(true);
+      expect(engine.render(source, glyphContext)).toBe(source);
+    },
+  );
+
+  it("keeps terminal spacing behind the punctuation switch and Chinese language", () => {
+    const source = "真的吗？？";
+    expect(engine.findReplacements(source, context)).toEqual([]);
+    expect(engine.findReplacements(source, {
+      settings: { ...DEFAULT_SETTINGS, cjkCurlyQuoteStyle: true },
+    })).toEqual([]);
+    expect(engine.findReplacements(source, { ...glyphContext, language: "en-US" })).toEqual([]);
+    const traditional = engine.findReplacements(source, { ...glyphContext, language: "zh-TW" });
+    expect(traditional).toHaveLength(2);
+    expect(traditional.every((item) => item.glyphWidth === undefined)).toBe(true);
+  });
+
   it("uses deterministic three-dot and six-dot ellipsis tokens", () => {
     expect(engine.render("他说：“wait...”", context)).toBe("他说：“wait…”");
     expect(engine.render("He wrote “等等...”", context)).toBe("He wrote “等等…”");

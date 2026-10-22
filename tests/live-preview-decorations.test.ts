@@ -102,6 +102,107 @@ describe("Live Preview source reveal boundaries", () => {
     expect(state.doc.toString()).toBe(source);
   });
 
+  it("keeps Chinese commas and enumeration commas as glyph marks across caret movement", () => {
+    const source = "从大气，地核、海洋、等出发";
+    for (const anchor of [0, 3, 4, 6, 7, 9, 10]) {
+      const state = EditorState.create({ doc: source, selection: { anchor } });
+      const decorations = buildTypographyDecorations(
+        testView(state), new TypographyEngine(),
+        { ...DEFAULT_SETTINGS, commaCorrection: true, cjkPunctuationStyle: true, revealAtCursor: true },
+      );
+      const styled: Array<{ text: string; spec: unknown }> = [];
+      decorations.between(0, source.length, (from, to, value) => {
+        styled.push({ text: source.slice(from, to), spec: value.spec });
+      });
+      expect(styled.map((entry) => entry.text)).toEqual(["，", "、", "、"]);
+      for (const entry of styled) {
+        expect(entry.spec).toMatchObject({ class: "typesetter-glyph", attributes: { lang: "zh-Hans" } });
+        expect(entry.spec).not.toHaveProperty("widget");
+      }
+      expect(state.doc.toString()).toBe(source);
+    }
+  });
+
+  it("styles existing Chinese commas with comma correction alone without replacing enumeration commas", () => {
+    const source = "从大气，地核、海洋､等出发";
+    for (const anchor of [0, 3, 4, 6, 9]) {
+      const state = EditorState.create({ doc: source, selection: { anchor } });
+      const decorations = buildTypographyDecorations(
+        testView(state), new TypographyEngine(),
+        { ...DEFAULT_SETTINGS, commaCorrection: true, cjkPunctuationStyle: false, revealAtCursor: true },
+      );
+      const styled: Array<{ text: string; spec: unknown }> = [];
+      decorations.between(0, source.length, (from, to, value) => {
+        styled.push({ text: source.slice(from, to), spec: value.spec });
+      });
+      expect(styled).toHaveLength(1);
+      expect(styled[0].text).toBe("，");
+      expect(styled[0].spec).toMatchObject({
+        class: "typesetter-glyph", attributes: { lang: "zh-Hans" },
+      });
+      expect(styled[0].spec).not.toHaveProperty("widget");
+      expect(state.doc.toString()).toBe(source);
+    }
+  });
+
+  it("keeps Chinese name separators halfwidth and editable across caret movement", () => {
+    const source = "威廉·莎士比亚";
+    for (const anchor of [0, 2, 3]) {
+      const state = EditorState.create({ doc: source, selection: { anchor } });
+      const decorations = buildTypographyDecorations(
+        testView(state), new TypographyEngine(),
+        { ...DEFAULT_SETTINGS, cjkPunctuationStyle: true },
+      );
+      expect(decorations.size).toBe(1);
+      decorations.between(0, source.length, (from, to, value) => {
+        expect(source.slice(from, to)).toBe("·");
+        expect(value.spec).toMatchObject({
+          class: "typesetter-glyph",
+          attributes: {
+            lang: "zh-Hans", "data-typography-width": "half", "data-typography-align": "center",
+          },
+        });
+        expect(value.spec).not.toHaveProperty("widget");
+      });
+      expect(state.doc.toString()).toBe(source);
+    }
+  });
+
+  it("keeps terminal punctuation spacing editable across caret movement", () => {
+    const source = "真的吗？？是的！！！";
+    for (const anchor of [0, 3, 4, 7, 9]) {
+      const state = EditorState.create({ doc: source, selection: { anchor } });
+      const decorations = buildTypographyDecorations(
+        testView(state), new TypographyEngine(),
+        { ...DEFAULT_SETTINGS, cjkPunctuationStyle: true },
+      );
+      const styles: unknown[] = [];
+      decorations.between(0, source.length, (from, to, value) => {
+        expect(to - from).toBe(1);
+        expect(value.spec).not.toHaveProperty("widget");
+        styles.push(value.spec);
+      });
+      expect(styles).toHaveLength(5);
+      for (let index = 0; index < styles.length; index += 1) {
+        expect(styles[index]).toMatchObject({ attributes: {
+          "data-typography-width": index < 2 ? "half" : "two-thirds",
+        } });
+      }
+      expect(state.doc.toString()).toBe(source);
+    }
+  });
+
+  it("does not space punctuation inside inline code or math", () => {
+    const source = "`威廉·莎士比亚？？` $威廉·莎士比亚！！！$";
+    const state = EditorState.create({ doc: source });
+    const decorations = buildTypographyDecorations(
+      testView(state), new TypographyEngine(),
+      { ...DEFAULT_SETTINGS, cjkPunctuationStyle: true },
+    );
+    expect(decorations.size).toBe(0);
+    expect(state.doc.toString()).toBe(source);
+  });
+
   it("does not decorate English quotes or change editor source", () => {
     const source = "He said “that’s correct.” 中文“English”中文";
     const state = EditorState.create({ doc: source });
